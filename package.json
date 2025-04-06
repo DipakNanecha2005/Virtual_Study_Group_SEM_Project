@@ -1,0 +1,41 @@
+{
+  "name": "virtual-study-group",
+  "version": "1.0.0",
+  "description": "Chat website for students to learn and collaborate with others through individual or group discussions.",
+  "main": "backend/server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "start": "nodemon"
+  },
+  "keywords": [
+    "Virtual Study Group",
+    "Study Groups",
+    "Study Sessions",
+    "Online Study",
+    "Group Chat",
+    "Study Community",
+    "Collaborative Learning"
+  ],
+  "author": "VSG's team",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^1.20.3",
+    "cloudinary": "^2.6.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.2",
+    "socket.io": "^4.8.1",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
