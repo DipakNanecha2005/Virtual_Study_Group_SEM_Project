@@ -1,0 +1,95 @@
+/* Reset and global styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #3c82f6, #2d974c); /* Matching the navbar gradient */
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Container for the login form */
+.login-container {
+  background-color: white;
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 20%;
+  padding: 0.1rem;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Heading styles */
+h1 {
+  color: #3c82f6; /* Matching the navbar color */
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 25px;
+}
+
+/* Form field styles */
+.formField {
+  position: relative;
+  margin-bottom: 1.2rem;
+}
+
+.formField input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid #3c82f6; /* Matching the navbar color */
+  border-radius: 30px;
+  font-size: 15px;
+  outline: none;
+  background-color: #f5fdf7;
+  color: black;
+  transition: all 0.25s ease;
+}
+
+.formField input:focus {
+  background-color: white;
+  box-shadow: 0 0 8px rgba(60, 130, 246, 0.3); /* Matching the navbar color */
+  border-color: #3c82f6; /* Matching the navbar color */
+}
+
+/* Button styling */
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #3c82f6; /* Matching the navbar color */
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+button:hover {
+  background-color: #2d74c1; /* Darker shade for hover effect */
+  transform: scale(1.02);
+}
+
+/* Sign up link */
+.login-link {
+  margin-top: 18px;
+  font-size: 13px;
+  color: #666;
+}
+
+.login-link a {
+  color: #3c82f6; /* Matching the navbar color */
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
