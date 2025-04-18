@@ -125,3 +125,41 @@ export const getUserInfo = async (req, res) => {
         });
     }
 }
+
+export const completeProfileInfo = async (req, res) => {
+    try {
+        const { email, bio } = req.body;
+        if(!email || ! bio) {
+            return res.status(400).json({
+                error: "Email and bio are required",
+                success: false
+            })
+        }
+
+        const userData = await UserModel.findByIdAndUpdate(
+            req.userId,
+            { email, bio },
+            { new: true, runValidators: true }
+        );
+
+        return res.status(200).json({
+            success: true,
+            // user: {
+            _id: userData._id,
+            fullName: userData.fullName,
+            username: userData.username,
+            gender: userData.gender,
+            avatar: userData.avatar,
+            email: userData.email,
+            bio: userData.bio
+            // }
+        });
+    } catch (error) {
+        console.log("Error in completeProfileInfo controller:", error);
+        res.status(500).json({
+            error: "Internal server error",
+            success: false
+        });
+    }
+}
+
