@@ -3,24 +3,24 @@ import jwt from "jsonwebtoken";
 
 export const authUser = async (req, res, next) => {
     try {
-        const cookie = req.cookies.jwt;
-        if (!cookie) {
+        const token = req.cookies.jwt;
+        if (!token) {
             return res.status(401).json({
                 error: "Unauthorized | cookie not found",
                 success: false
             });
         }
 
-        const decoded = jwt.verify(cookie, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         const user = await UserModel.findById(decoded.userId);
         if (!user) {
             const err = new Error("Unauthorized | invalid cookie token");
-            err.status = 401;
+            err.status = 403;
             return next(err);
         }
 
-        req.user = user;
+        req.userId = user._id;
         return next();
     } catch (error) {
         console.log("Error in authUser middleware:", error);

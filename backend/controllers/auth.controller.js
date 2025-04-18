@@ -97,3 +97,31 @@ export const logout = (req, res) => {
     }
 }
 
+export const getUserInfo = async (req, res) => {
+    try {
+        const userData = await UserModel.findById(req.userId);
+        if (!userData) {
+            return res.status(404).json({
+                error: "User with given id not found",
+                success: false
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            // user: {
+            _id: userData._id,
+            fullName: userData.fullName,
+            username: userData.username,
+            gender: userData.gender,
+            avatar: userData.avatar
+            // }
+        });
+    } catch (error) {
+        console.log("Error in getUserInfo controller:", error);
+        res.status(500).json({
+            error: "Internal server error",
+            success: false
+        });
+    }
+}
