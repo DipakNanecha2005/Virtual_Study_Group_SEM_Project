@@ -1,0 +1,123 @@
+/* General Container */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: linear-gradient(to right, #f8f4e5, #fbeec1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header */
+.chat-header {
+  background-color: #5d3a00;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  border-bottom: 2px solid #b08968;
+}
+
+/* Messages Area */
+.chat-messages {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Chat Bubbles */
+.chat-bubble {
+  max-width: 70%;
+  padding: 0.75rem 1rem;
+  border-radius: 1.25rem;
+  position: relative;
+  font-size: 0.95rem;
+  word-wrap: break-word;
+}
+
+/* User A (current user) */
+.user-a {
+  align-self: flex-end;
+  background-color: #d4a373;
+  color: #fff;
+  border-bottom-right-radius: 0;
+}
+
+/* User B (other user) */
+.user-b {
+  align-self: flex-start;
+  background-color: #fff8dc;
+  color: #5d3a00;
+  border-bottom-left-radius: 0;
+  border: 1px solid #e1c78f;
+}
+
+/* Sender name */
+.sender-name {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+/* Input Section */
+.chat-inputs {
+  padding: 1rem;
+  border-top: 2px solid #b08968;
+  background-color: #fffaf0;
+}
+
+.input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 0.6rem 0.9rem;
+  border-radius: 1.25rem;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 1rem;
+  background-color: #fff8f0;
+  transition: border-color 0.3s ease;
+}
+
+.chat-input:focus {
+  border-color: #b08968;
+}
+
+/* Send Button */
+.send-btn-a {
+  padding: 0.6rem 1.2rem;
+  background-color: #5d3a00;
+  color: white;
+  border: none;
+  border-radius: 1.25rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.send-btn-a:hover {
+  background-color: #7b4f1c;
+}
+
+/* Delete Button */
+.delete-btn {
+  position: absolute;
+  top: 4px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: #900;
+  font-size: 0.9rem;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+}
