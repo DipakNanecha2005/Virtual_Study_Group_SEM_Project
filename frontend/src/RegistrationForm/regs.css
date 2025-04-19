@@ -1,0 +1,117 @@
+/* Reset and global styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #5fdb73, #2d974c);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+     display: flex;
+     justify-content: center; 
+    align-items: center; 
+    width: 100vw;
+  }
+  
+  /* Card container */
+  .container {
+    background-color: white;
+    margin: 0 40% 0 40%;
+    width: 15rem; /* Full width up to max-width */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem; /* Adjusted padding */
+    border-radius: 1rem; /* Rounded corners */
+    box-shadow: 0 0.75rem 1.875rem rgba(0, 0, 0, 0.1); /* Shadow for depth */
+    transition: all 0.3s ease;
+  }
+  
+  /* Heading */
+  h1 {
+    text-align: center;
+    margin-bottom: 1.5625rem;
+    color: #0a6833;
+    font-size: 1.625rem;
+    font-weight: 600;
+    width: 100%; /* Ensure heading doesn't overflow */
+  }
+  
+  /* Form field */
+  .formField {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    width: 13rem; /* Make form fields full-width */
+    margin-bottom: 1.375rem;
+  }
+  
+  .formField input {
+    width: 60%; /* Full width for better responsiveness */
+    padding: 0.75rem 2.8125rem;
+    border: 0.125rem solid #0a6833;
+    border-radius: 1.875rem;
+    font-size: 0.9375rem;
+    outline: none;
+    background-color: #f5fdf7;
+    color: black;
+    transition: all 0.25s ease;
+  }
+  
+  .formField input:focus {
+    background-color: white;
+    box-shadow: 0 0 0.5rem rgba(10, 104, 51, 0.3);
+    border-color: #0a6833;
+  }
+  
+  .formField input::placeholder {
+    color: black;
+    opacity: 1;
+  }
+  
+  /* Icons inside input */
+  /* .formField i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #0a6833;
+    font-size: 1.125rem;
+  } */
+  
+  /* Button */
+  button {
+    width: 8rem;
+    padding: 0.75rem;
+    background-color: #0a6833;
+    color: white;
+    border: none;
+    border-radius: 1.875rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.03125rem;
+  }
+  
+  button:hover {
+    background-color: #09552a;
+    transform: scale(1.05);
+  }
+  
+  /* Sign in text */
+  .login-link {
+    text-align: center;
+    font-size: 0.8125rem;
+    color: #666;
+    margin-top: 1.125rem;
+  }
+  
+  .login-link a {
+    color: #0a6833;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .login-link a:hover {
+    text-decoration: underline;
+  }
