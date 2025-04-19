@@ -1,32 +1,46 @@
-
 import React, { useEffect, useState, useRef } from "react";
+import { io } from "socket.io-client";
 import "./dm.css";
-import io from "socket.io-client";
-import axios from "axios";
 
-const socket = io("http://localhost:5173"); // Replace with your backend server
+const socket = io("http://localhost:5000");
 
-console.log("ChatBetweenTwo component loaded");
-
-const ChatBetweenTwo = ({ chatId, currentUser }) => {
+const ChatBetweenTwo = ({ chatId }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
+  const [tempCurrentUser, setTempCurrentUser] = useState("testUser1"); // Default test user
 
-  // Scroll to bottom on new messages
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    // Join the chat room
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/chats/${chatId}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.messages) {
+            setMessages(data.messages);
+            scrollToBottom();
+          } else {
+            console.error("Failed to fetch messages: Invalid response format");
+          }
+        } else {
+          console.error("Failed to fetch messages");
+        }
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+
+    fetchMessages();
+
     socket.emit("join_room", chatId);
 
-    // Listen for real-time messages
     socket.on("receive_message", (data) => {
-      if (data.chatId === chatId) {
-        setMessages((prev) => [...prev, data.message]);
-      }
+      setMessages((prev) => [...prev, data]); // Expecting the whole message object now
+      scrollToBottom();
     });
 
     return () => {
@@ -35,69 +49,65 @@ const ChatBetweenTwo = ({ chatId, currentUser }) => {
     };
   }, [chatId]);
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const res = await axios.get(`/api/messages/${chatId}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        setMessages(res.data);
-        scrollToBottom();
-      } catch (err) {
-        console.error("Fetch error:", err);
-      }
-    };
-    fetchMessages();
-  }, [chatId]);
-
-  const sendMessage = async () => {
+  const sendMessage = () => {
     if (!input.trim()) return;
-    try {
-      const res = await axios.post(
-        `/api/messages/${chatId}`,
-        { content: input },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
-      );
-      setInput("");
-      setMessages((prev) => [...prev, res.data]);
-      scrollToBottom();
-    } catch (err) {
-      console.error("Send error:", err);
-    }
+
+    const newMessage = {
+      sender: { _id: tempCurrentUser, username: tempCurrentUser }, // Use temp user
+      content: input,
+      chat: chatId, // Backend expects 'chat' instead of 'chatId' in message object
+      createdAt: new Date(), // Add timestamp to the message
+      _id: Math.random().toString(36).substring(7), // Temporary ID for optimistic update
+    };
+
+    socket.emit("send_message", newMessage); // Send the entire newMessage object
+
+    setMessages((prev) => [...prev, newMessage]);
+    setInput("");
+    scrollToBottom();
   };
 
   const deleteMessage = async (messageId) => {
     try {
-      await axios.delete(`/api/messages/${messageId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      const response = await fetch(`http://localhost:5000/api/messages/${messageId}`, {
+        method: "DELETE",
       });
-      setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
-    } catch (err) {
-      console.error("Delete error:", err);
+
+      if (response.ok) {
+        setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+      } else {
+        console.error("Failed to delete message");
+      }
+    } catch (error) {
+      console.error("Error deleting message:", error);
     }
   };
 
   return (
     <div className="chat-container">
-      <header className="chat-header">Chat Room</header>
+      <header className="chat-header">Chat Room: {chatId}</header>
+
+      {/* Temporary user identifier for testing */}
+      <div>
+        Testing as user: <strong>{tempCurrentUser}</strong>
+        {/* Optional: Add an input to change the test user */}
+        {/* <input
+          value={tempCurrentUser}
+          onChange={(e) => setTempCurrentUser(e.target.value)}
+          placeholder="Enter test user ID"
+        /> */}
+      </div>
 
       <div className="chat-messages">
         {messages.map((msg) => (
           <div
             key={msg._id}
-            className={`chat-bubble ${
-              msg.sender._id === currentUser ? "user-a" : "user-b"
-            }`}
+            className={`chat-bubble ${msg.sender._id === tempCurrentUser ? "user-a" : "user-b"}`}
           >
-            <div className="sender-name">
-              {msg.sender.username || "Anonymous"}
-            </div>
+            <div className="sender-name">{msg.sender.username}</div>
             <div>{msg.content}</div>
-            {msg.sender._id === currentUser && (
-              <button
-                className="delete-btn"
-                onClick={() => deleteMessage(msg._id)}
-              >
+            {msg.sender._id === tempCurrentUser && (
+              <button className="delete-btn" onClick={() => deleteMessage(msg._id)}>
                 ✖
               </button>
             )}
