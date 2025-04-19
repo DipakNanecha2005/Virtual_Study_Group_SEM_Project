@@ -90,19 +90,19 @@ export const login = async (req, res) => {
 
 export const logout = (req, res) => {
     try {
-        res.cookie("jwt", "", { maxAge: 0 });
+        res.cookie("jwt", "", { httpOnly: true, expires: new Date(0) }); // Clear cookie
         res.status(200).json({
-            msg: "Logged out successfully",
-            success: true
+            success: true,
+            msg: "Logged out successfully"
         });
     } catch (error) {
-        console.log("Error in logout controller:", error);
+        console.error("Error in logout controller:", error);
         res.status(500).json({
-            error: "Internal server error",
-            success: false
+            success: false,
+            error: "Internal server error"
         });
     }
-}
+};
 
 export const getUserInfo = async (req, res) => {
     try {

@@ -10,4 +10,5 @@ router.post("/login", login);
 router.use(authUser);
 router.post("/logout", logout);
 router.get("/user-info", getUserInfo);
+
 export default router;
