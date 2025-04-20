@@ -66,10 +66,12 @@ export const login = async (req, res) => {
             });
         }
 
-        generateTokenAndSetCookie(user._id, res);
+        const token = generateTokenAndSetCookie(user._id, res);
 
         res.status(200).json({
             msg: "Login successfully",
+            user:user,
+            token:token, 
             success: true
         });
     } catch (error) {
@@ -138,7 +140,7 @@ export const completeProfileInfo = async (req, res) => {
 
         const userData = await UserModel.findByIdAndUpdate(
             req.userId,
-            { email, bio },
+            { email, bio, isProfileComplete: true },
             { new: true, runValidators: true }
         );
 

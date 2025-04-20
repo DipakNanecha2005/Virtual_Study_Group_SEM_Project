@@ -36,6 +36,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    isProfileComplete: {
+        type: Boolean,
+        default: false
+    },
     refreshToken: String
 }, { timestamps: true });
 
