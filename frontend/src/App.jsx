@@ -1,30 +1,51 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import NavBar from "./Elements/navBar";
-import Footer from "./Elements/footer";
-// import ChatBetweenTwo from "./Chat/dm";
-// import EditProfile from "./userProfile/userProfile";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Signup from "./RegistrationForm/regs";
 import Login from "./LoginForm/login";
 import Dashboard from "./pages/Dashboard";
-import ChatPage from "./Chat/ChatPage";
-import Messages from "./pages/Messages";
+import ProtectedRoute from "./ProtectedRoute";
+import PublicRoute from "./PublicRoute";
+import ChatPage from "./pages/chatPage";
+
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <div className="App">
-        {/* <NavBar /> */}
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Signup />} />
-          <Route path="/" element={<Dashboard/>}/>
-          <Route path="/messages" element={<Messages/>}/>
-          {/* <Route path="/dm" element={<ChatBetweenTwo chatId="some-chat-id" currentUser="user-id" />} /> */}
-          {/* <Route path="/profile" element={<EditProfile/>} /> */}
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Signup />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route 
+            path="/chat"
+            element={
+              <ProtectedRoute>
+                <ChatPage />
+              </ProtectedRoute>
+            }
+            />
         </Routes>
-        {/* <Footer /> */}
       </div>
-    </Router>
+    </BrowserRouter>
   );
 }
 

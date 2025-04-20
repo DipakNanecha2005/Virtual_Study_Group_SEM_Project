@@ -4,6 +4,7 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, Link } from 'react-router-dom';
+import Spinner from '../Spinner/Spinner'; // <-- Add this line
 
 const Signup = () => {
     const [fullName, setFullName] = useState('');
@@ -11,10 +12,12 @@ const Signup = () => {
     const [password, setPassword] = useState('');
     const [gender, setGender] = useState('');
     const [loading, setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true); // <-- Initial fake loading
     const navigate = useNavigate();
 
+    // 2-sec initial loading simulation
     useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 2000);
+        const timer = setTimeout(() => setInitialLoading(false), 2000);
         return () => clearTimeout(timer);
     }, []);
 
@@ -73,12 +76,12 @@ const Signup = () => {
             );
 
             if (response.data.success) {
-                toast.success(response.data.msg, { position: 'top-right' });
+                toast.success(response.data.msg, { position: 'top-right' , autoClose: 500 });
                 setFullName('');
                 setUsername('');
                 setPassword('');
                 setGender('');
-                setTimeout(() => navigate('/login'), 2000);
+                setTimeout(() => navigate('/login'), 1000);
             } else {
                 toast.error(response.data.error || 'Something went wrong', { position: 'top-right' });
             }
@@ -92,6 +95,9 @@ const Signup = () => {
 
         setLoading(false);
     };
+
+    // Show spinner during initial loading
+    if (initialLoading) return <Spinner />;
 
     return (
         <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>

@@ -15,9 +15,11 @@ app.use(cors({
 
 // route import
 import authRoute from './routes/auth.route.js';
+import contactRoute from './routes/contact.route.js'
 
 // route middleware
 app.use("/auth", authRoute);
+app.use('/contact',contactRoute)
 
 app.get("/", (req, res) => {
     res.status(200).send("Home");

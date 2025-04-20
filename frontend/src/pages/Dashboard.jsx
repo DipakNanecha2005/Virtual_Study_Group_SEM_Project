@@ -1,63 +1,97 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from './Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Spinner from '../Spinner/Spinner';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Dashboard = () => {
     const navigate = useNavigate();
-    const [searchTerm, setSearchTerm] = useState('');
     const [userInfo, setUserInfo] = useState(null);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [initialLoading, setInitialLoading] = useState(true);
+    const [hasError, setHasError] = useState(false); // prevent repeated toasts
 
-    const handleSearch = async () => {
-        try {
-            const response = await axios.get('http://localhost:5000/auth/user-info', {
-                params: { username: searchTerm },
-                withCredentials: true
-            });
-            
-            setUserInfo(response.data);
-            setErrorMessage('');
-        } catch(err){
-            setUserInfo(null);
-            setErrorMessage('User not found or an error occurred.');
-        }
-    };
+    // Show spinner for the first 1 sec
+    useEffect(() => {
+        const timer = setTimeout(() => setInitialLoading(false), 1000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // Fetch user data
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const res = await axios.get('http://localhost:5000/auth/user-info', {
+                    withCredentials: true,
+                });
+                setUserInfo(res.data);
+                setHasError(false); // reset error if success
+                localStorage.removeItem('isLoggingOut'); // clear logout flag if user info loads fine
+            } catch (err) {
+                console.error(err);
+                setUserInfo(null);
+
+                // Only show toast if NOT logging out
+                if (!hasError && localStorage.getItem('isLoggingOut') !== 'true') {
+                    setTimeout(() => {
+                        toast.error('Failed to load user info.', {
+                            position: 'top-right',
+                            autoClose: 3000,
+                        });
+                        setHasError(true); // only once
+                    },1000)
+
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserInfo();
+
+        const intervalId = setInterval(fetchUserInfo, 1000); // refresh user data every second
+        return () => clearInterval(intervalId);
+    }, [hasError]);
+
+    if (initialLoading || loading) return <Spinner />;
 
     return (
         <div>
             <Navbar />
 
-            {/* Main Dashboard Content */}
             <div className="container mt-5">
-                <h2 className="mb-4">Welcome to Your Study Dashboard</h2>
+                <h2 className="mb-4">
+                    {userInfo ? `Welcome ${userInfo.fullName} to Your Study Dashboard` : "Loading your dashboard..."}
+                </h2>
 
-                {/* Search Section */}
-                <div className="mb-4">
-                    <div className="input-group">
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Search User by Username"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        <button className="btn btn-primary" onClick={handleSearch}>
-                            Search
-                        </button>
-                    </div>
-                    {errorMessage && <p className="text-danger">{errorMessage}</p>}
-                    {userInfo && (
-                        <div className="mt-3">
-                            <h5>User Info</h5>
-                            <p><strong>Full Name:</strong> {userInfo.fullName}</p>
-                            <p><strong>Username:</strong> {userInfo.username}</p>
-                            <p><strong>Gender:</strong> {userInfo.gender}</p>
-                            <img src={userInfo.avatar} alt="avatar" style={{ width: 50, height: 50 }} />
+                {userInfo && (
+                    <div className="card mb-4 shadow-lg border-0 rounded-4 p-4" style={{ backgroundColor: "#f8f9fa" }}>
+                        <div className="d-flex align-items-center">
+                            <img
+                                src={userInfo.avatar}
+                                alt="avatar"
+                                className="rounded-circle me-4"
+                                style={{ width: 80, height: 80, border: '2px solid #007bff' }}
+                            />
+                            <div>
+                                <h4 className="mb-1">{userInfo.fullName}</h4>
+                                <p className="mb-0"><strong>Username:</strong> {userInfo.username}</p>
+                                <p className="mb-0"><strong>Gender:</strong> {userInfo.gender}</p>
+                            </div>
+                            <div className="ms-auto">
+                                <button
+                                    className="btn btn-outline-primary"
+                                    onClick={() => navigate('/edit-profile')}
+                                >
+                                    Edit Profile
+                                </button>
+                            </div>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
 
                 <div className="row">
                     <div className="col-md-4 mb-4">
@@ -73,9 +107,9 @@ const Dashboard = () => {
                     <div className="col-md-4 mb-4">
                         <div className="card shadow">
                             <div className="card-body">
-                                <h5 className="card-title">Messages</h5>
-                                <p className="card-text">Check group chats and DMs.</p>
-                                <button className="btn btn-success" onClick={() => navigate('/messages')}>Go to Messages</button>
+                                <h5 className="card-title">Chats</h5>
+                                <p className="card-text">Check DMs.</p>
+                                <button className="btn btn-success" onClick={() => navigate('/chat')}>Go to Messages</button>
                             </div>
                         </div>
                     </div>
@@ -89,10 +123,11 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
-
-            {/* Footer */}
+            <ToastContainer />
+ 
             <footer className="bg-dark text-white text-center mt-5 py-3">
                 <p className="mb-0">© {new Date().getFullYear()} Virtual Study Group. All rights reserved.</p>
             </footer>

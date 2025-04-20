@@ -23,9 +23,9 @@ const Navbar = () => {
             if (res.data.success === true) {
                 toast.success("Logged out successfully!", {
                     position: 'top-right',
-                    autoClose: 3000,
+                    autoClose: 500,
                 });
-                setTimeout(() => navigate('/login'), 2000);
+                setTimeout(() => navigate('/login'), 1000);
             } else {
                 toast.error("Logout failed. Try again.", {
                     position: 'top-right',
@@ -69,13 +69,13 @@ const Navbar = () => {
                     <div className="collapse navbar-collapse" id="navbarContent">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             <li className="nav-item">
-                                <a className="nav-link" href="/dashboard">Dashboard</a>
+                                <a className="nav-link" href="/">Dashboard</a>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link" href="/groups">Groups</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="/messages">Messages</a>
+                                <a className="nav-link" href="/chat">Messages</a>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link" href="/resources">Resources</a>

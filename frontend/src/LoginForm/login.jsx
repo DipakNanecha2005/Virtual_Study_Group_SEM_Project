@@ -14,7 +14,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const timer = setTimeout(() => setInitialLoading(false), 2000);
+    const timer = setTimeout(() => setInitialLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -30,8 +30,8 @@ const Login = () => {
       );
 
       if (response.data.success) {
-        toast.success('Login successful!', { position: 'top-right', autoClose: 2000 });
-        setTimeout(() => navigate('/'), 2500);
+        toast.success('Login successful!', { position: 'top-right', autoClose: 500 });
+        setTimeout(() => navigate('/'), 1000);
       } else {
         toast.error(response.data.error || 'Login failed', { position: 'top-right', autoClose: 3000 });
       }
@@ -84,7 +84,7 @@ const Login = () => {
               className="btn btn-primary w-100 mb-3"
               disabled={submitting}
             >
-              {submitting ? <Spinner small /> : 'Login'}
+              Login
             </button>
           </form>
           <div className="text-center">
@@ -93,7 +93,18 @@ const Login = () => {
             </p>
           </div>
         </div>
-        <ToastContainer />
+        <ToastContainer 
+          position='bottom-center'
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          toastClassName="rounded-toasts"
+        />
       </div>
     </>
   );
