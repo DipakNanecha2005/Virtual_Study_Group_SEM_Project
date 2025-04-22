@@ -1,3 +1,4 @@
+
 import { UserModel } from "../models/User.model.js";
 import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateToken.js";
@@ -30,7 +31,8 @@ export const signup = async (req, res) => {
         generateTokenAndSetCookie(newUser._id, res);
 
         res.status(201).json({
-            msg: "success", user: {
+            msg: "success", 
+            user: {
                 _id: newUser._id,
                 fullName: newUser.fullName,
                 username: newUser.username,
@@ -70,8 +72,8 @@ export const login = async (req, res) => {
 
         res.status(200).json({
             msg: "Login successfully",
-            user:user,
-            token:token, 
+            user,
+            token, 
             success: true
         });
     } catch (error) {
@@ -116,7 +118,9 @@ export const getUserInfo = async (req, res) => {
             fullName: userData.fullName,
             username: userData.username,
             gender: userData.gender,
-            avatar: userData.avatar
+            avatar: userData.avatar,
+            email: userData?.email,
+            bio: userData?.bio
             // }
         });
     } catch (error) {
@@ -146,14 +150,15 @@ export const completeProfileInfo = async (req, res) => {
 
         return res.status(200).json({
             success: true,
+            user: userData
             // user: {
-            _id: userData._id,
-            fullName: userData.fullName,
-            username: userData.username,
-            gender: userData.gender,
-            avatar: userData.avatar,
-            email: userData.email,
-            bio: userData.bio
+            // _id: userData._id,
+            // fullName: userData.fullName,
+            // username: userData.username,
+            // gender: userData.gender,
+            // avatar: userData.avatar,
+            // email: userData.email,
+            // bio: userData.bio
             // }
         });
     } catch (error) {
