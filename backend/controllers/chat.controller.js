@@ -18,7 +18,7 @@ export const newChat = async (req, res) => {
                 isGroup: false,
                 members: { $all: [self, otherUser] }
             });
-            if (existingChat) {
+            if (chatExists) {
                 return res.status(200).json({
                     success: true,
                     chat: chatExists

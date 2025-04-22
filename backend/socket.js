@@ -45,13 +45,13 @@ export const setupSocket = (server) => {
     //     }
     // }
 
-    const newMessage = async (messageData) => {
+    const newMessage = async (socket, messageData) => {
         try {
-            const { sender, messageType, content, fileUrl, chatId } = req.body;
+            const { sender, messageType, content, fileUrl, chatId } = messageData;
             if (!sender || !messageType || !chatId) {
                 return socket.emit("error", "Sender, messageType, and chatId are required");
             }
-
+            console.log({ messageData });
             let createdMessage;
             if (messageType === "text") {
                 if (!content) {
@@ -77,28 +77,25 @@ export const setupSocket = (server) => {
             console.log("Error in newMessage function socket.js file:", error);
             socket.emit("error", "Error handling newMessage");
         }
-    }
+    };
 
-    const messageTypeing = async (data) => {
+    const messageTyping = (socket, data) => {
         socket.broadcast.to(data.chatId).emit("userTyping", data);
-    }
+    };
 
-    const userTyping = (data) => {
+    const userTyping = (socket, data) => {
         socket.broadcast.to(data.chatId).emit("userTyping", data);
-    }
+    };
 
-    const createChat = async (chatData) => {
+    const createChat = async (socket, chatData) => {
         try {
-            const { creator, members, isGroup, name } = req.body;
+            const { creator, members, isGroup, name } = chatData;
             if (!creator || !members || !isGroup) {
                 return socket.emit("error", "Creator, members, and group status are required");
             }
 
             const newChat = await ChatModel.create({
-                creator,
-                members,
-                isGroup,
-                name
+                creator, members, isGroup, name
             });
 
             members.forEach((memberId) => {
@@ -111,11 +108,11 @@ export const setupSocket = (server) => {
             console.log("Error in createChat function socket.js file:", error);
             socket.emit("error", "Error creating chat");
         }
-    }
+    };
 
-    const addUserToChat = async (data) => {
+    const addUserToChat = async (socket, data) => {
         try {
-            const { chatId, userId } = req.body;
+            const { chatId, userId } = data;
 
             const chat = await ChatModel.findById(chatId);
             if (!chat) {
@@ -130,14 +127,14 @@ export const setupSocket = (server) => {
                 if (memberSocketId) {
                     io.to(memberSocketId).emit("userAddedToChat", { chatId, userId });
                 }
-            })
+            });
         } catch (error) {
             console.log("Error in addUserToChat function socket.js file:", error);
             socket.emit("error", "Error adding user to chat");
         }
-    }
+    };
 
-    const removeUserFromChat = async (data) => {
+    const removeUserFromChat = async (socket, data) => {
         try {
             const { chatId, userId } = data;
 
@@ -158,12 +155,12 @@ export const setupSocket = (server) => {
             console.log("Error in removeUserFromChat function socket.js file:", error);
             socket.emit("error", "Error removing user from chat");
         }
-    }
+    };
 
-    const chatUpdated = async (updatedChat) => {
+    const chatUpdated = async (socket, updatedChat) => {
         try {
             const { chatId, newName } = updatedChat;
-            
+
             const chat = await ChatModel.findByIdAndUpdate(chatId, { name: newName }, { new: true });
             if (!chat) {
                 return socket.emit("error", "Chat not found");
@@ -179,48 +176,45 @@ export const setupSocket = (server) => {
             console.log("Error in chatUpdated function socket.js file:", error);
             socket.emit("error", "Error updating chat");
         }
-    }
+    };
 
     const userOnline = (userId) => {
         io.emit("userOnline", userId);
-    }
+    };
 
     const userOffline = (userId) => {
         io.emit("userOffline", userId);
-    }
+    };
 
-    const fileUpload = async (fileData) => {
+    const fileUpload = async (socket, fileData) => {
         try {
             const { sender, fileUrl, chatId } = fileData;
             if (!sender || !fileUrl || !chatId) {
                 return socket.emit("error", "Sender, fileUrl, and chatId are required");
             }
 
-            const newMessage = await MessageModel.create({ 
-                sender, messageType: "file", 
-                fileUrl, 
-                chatId 
+            const newMessage = await MessageModel.create({
+                sender, messageType: "file", fileUrl, chatId
             });
 
             const chat = await ChatModel.findById(chatId)
                 .populate("members");
             chat.members.forEach((member) => {
                 const memberSocketId = userSocketMap.get(member._id.toString());
-                if(memberSocketId) {
+                if (memberSocketId) {
                     io.to(memberSocketId).emit("fileReceived", newMessage);
                 }
             });
-
         } catch (error) {
             console.log("Error in fileUpload function socket.js file:", error);
             socket.emit("error", "Error uploading file");
         }
-    }
+    };
 
-    const deleteMessage = async (messageId, chatId) => {
+    const deleteMessage = async (socket, messageId, chatId) => {
         try {
             const message = await MessageModel.findByIdAndDelete(messageId);
-            if(!message) {
+            if (!message) {
                 return socket.emit("error", "Message not found");
             }
 
@@ -232,12 +226,12 @@ export const setupSocket = (server) => {
                     io.to(memberSocketId).emit("messageDeleted", { messageId, chatId });
                 }
             });
-            
+
         } catch (error) {
             console.log("Error in deleteMessage function socket.js file:", error);
             socket.emit("error", "Error deleting message");
         }
-    }
+    };
 
     io.on("connection", (socket) => {
         const userId = socket.handshake.query.userId;
@@ -249,22 +243,18 @@ export const setupSocket = (server) => {
             console.log("User id not provided during connection");
         }
 
-        socket.on("newMessage", newMessage);
-        // io.to(memberSocketId).emit("receiveMessage", createdMessage); 
-        socket.on("messageTypeing", messageTypeing);
-        socket.on("userTyping", userTyping);
-        socket.on("createChat", createChat);
-        socket.on("addUserToChat", addUserToChat);
-        socket.on("removeUserFromChat", removeUserFromChat);
-        socket.on("chatUpdated", chatUpdated);
+        socket.on("newMessage", (messageData) => newMessage(socket, messageData));
+        socket.on("messageTyping", (data) => messageTyping(socket, data));
+        socket.on("userTyping", (data) => userTyping(socket, data));
+        socket.on("createChat", (chatData) => createChat(socket, chatData));
+        socket.on("addUserToChat", (data) => addUserToChat(socket, data));
+        socket.on("removeUserFromChat", (data) => removeUserFromChat(socket, data));
+        socket.on("chatUpdated", (updatedChat) => chatUpdated(socket, updatedChat));
         socket.on("userOnline", userOnline);
         socket.on("userOffline", userOffline);
-        socket.on("fileUpload", fileUpload);
-        socket.on("deleteMessage", deleteMessage);
+        socket.on("fileUpload", (fileData) => fileUpload(socket, fileData));
+        socket.on("deleteMessage", (messageId, chatId) => deleteMessage(socket, messageId, chatId));
 
-        /* testing */
-        // socket.on("sendMessage", sendMessage);
-        // socket.on('join_room');
         socket.on("disconnect", () => disconnect(socket));
     });
-}
+};
