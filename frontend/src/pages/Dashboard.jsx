@@ -12,7 +12,6 @@ const Dashboard = () => {
     const [userInfo, setUserInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [initialLoading, setInitialLoading] = useState(true);
-    const [hasError, setHasError] = useState(false); // prevent repeated toasts
 
     // Show spinner for the first 1 sec
     useEffect(() => {
@@ -28,33 +27,17 @@ const Dashboard = () => {
                     withCredentials: true,
                 });
                 setUserInfo(res.data);
-                setHasError(false); // reset error if success
                 localStorage.removeItem('isLoggingOut'); // clear logout flag if user info loads fine
             } catch (err) {
                 console.error(err);
                 setUserInfo(null);
-
-                // Only show toast if NOT logging out
-                if (!hasError && localStorage.getItem('isLoggingOut') !== 'true') {
-                    setTimeout(() => {
-                        toast.error('Failed to load user info.', {
-                            position: 'top-right',
-                            autoClose: 3000,
-                        });
-                        setHasError(true); // only once
-                    },1000)
-
-                }
             } finally {
                 setLoading(false);
             }
         };
 
         fetchUserInfo();
-
-        const intervalId = setInterval(fetchUserInfo, 1000); // refresh user data every second
-        return () => clearInterval(intervalId);
-    }, [hasError]);
+    }, []);
 
     if (initialLoading || loading) return <Spinner />;
 

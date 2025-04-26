@@ -6,7 +6,6 @@ export const authUser = async (req, res, next) => {
         
         const token = req.cookies.jwt;
         if (!token) {
-            console.log("Token Not Found");
             return res.status(401).json({
                 error: "Unauthorized | cookie not found",
                 success: false

@@ -1,7 +1,6 @@
 import { UserModel } from "../models/User.model.js";
 import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateToken.js";
-import { token } from "morgan";
 
 export const signup = async (req, res) => {
     console.log("Welcome to backend Signup URL ");
@@ -79,7 +78,6 @@ export const login = async (req, res) => {
 
         res.status(200).json({
             msg: "Login successfully",
-            token,
             success: true
         });
     } catch (error) {
