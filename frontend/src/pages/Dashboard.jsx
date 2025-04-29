@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Spinner from '../Spinner/Spinner';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Dashboard = () => {
@@ -31,6 +31,7 @@ const Dashboard = () => {
             } catch (err) {
                 console.error(err);
                 setUserInfo(null);
+                navigate('/login');
             } finally {
                 setLoading(false);
             }

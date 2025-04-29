@@ -1,26 +1,31 @@
-import React from 'react'
-import ChatUI from '../Elements/ChatUI'
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'react-toastify/dist/ReactToastify.css';
-import Navbar from './Navbar'
+import React from 'react';
+import { ChatState } from '../context/ChatProvider';
+import MyChats from '../Elements/MyChats';
+import ChatBox from '../Elements/ChatBox';
+import SideDrawer from '../Elements/SideDrawer'; 
+import Navbar from './Navbar';
 
-const chatPage = () => {
+
+const ChatPage = () => {
+  const { user } = ChatState();
+
+  if (!user) {
+    return <div>Loading...</div>;  
+  }
+
   return (
     <>
-        <Navbar/>
-        <div className='container mt-5'>
-        <h2 className="mb-4 text-center">
-                    Welcome to Your Study Chats 
-        </h2>
-        <ChatUI/>
-
+                <Navbar />
+      <div style={{ width: '100%' }}>
+        {user && <SideDrawer />}
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          {user && <MyChats />}
+          {user && <ChatBox />}
         </div>
-
-            <footer className="bg-dark text-white text-center mt-5 py-3">
-                <p className="mb-0">© {new Date().getFullYear()} Virtual Study Group. All rights reserved.</p>
-            </footer>
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default chatPage
+
+export default ChatPage;

@@ -9,8 +9,10 @@ import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,6 +23,13 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    setError('');
+
+    if (!username || !password) {
+      setError('Please fill in all fields');
+      setSubmitting(false);
+      return;
+    }
 
     try {
       const response = await axios.post(
@@ -29,10 +38,14 @@ const Login = () => {
         { withCredentials: true }
       );
 
-      if (response.data.success) {
-        toast.success('Login successful!', { position: 'top-right', autoClose: 500 });
-        setTimeout(() => navigate('/'), 1000);
-      } else {
+// Inside the handleSubmit method
+if (response.data.success) {
+  toast.success('Login successful!', { position: 'top-right', autoClose: 500 });
+  localStorage.setItem('userInfo', JSON.stringify(response.data.user)); // Save user object
+  localStorage.setItem('token', response.data.token); // Save token
+  setTimeout(() => navigate('/'), 1000);
+}
+ else {
         toast.error(response.data.error || 'Login failed', { position: 'top-right', autoClose: 3000 });
       }
     } catch (error) {
@@ -53,6 +66,7 @@ const Login = () => {
         <div className="col-md-6 shadow p-4 rounded bg-light">
           <h2 className="text-center mb-4">Login</h2>
           <form onSubmit={handleSubmit}>
+            {error && <div className="alert alert-danger">{error}</div>}
             <div className="form-group mb-3">
               <label htmlFor="username">Email or Username</label>
               <input
@@ -66,10 +80,11 @@ const Login = () => {
                 disabled={submitting}
               />
             </div>
-            <div className="form-group mb-4">
+
+            <div className="form-group mb-4 position-relative">
               <label htmlFor="password">Password</label>
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 className="form-control"
                 id="password"
                 placeholder="Enter your password"
@@ -78,31 +93,41 @@ const Login = () => {
                 required
                 disabled={submitting}
               />
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '15px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer',
+                  color: '#555'
+                }}
+              >
+                <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+              </span>
             </div>
+
             <button
               type="submit"
               className="btn btn-primary w-100 mb-3"
               disabled={submitting}
             >
-              Login
+              {submitting ? 'Logging in...' : 'Login'}
             </button>
           </form>
+
           <div className="text-center">
-            <p>New User?
-            <Link to="/register" className="btn btn-outline-secondary">Register</Link>
-            </p>
+            <p>New User?</p>
+            <Link to="/register" className="btn btn-outline-secondary">
+              Register
+            </Link>
           </div>
         </div>
+
         <ToastContainer 
-          position='bottom-center'
+          position="bottom-center"
           autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
           toastClassName="rounded-toasts"
         />
       </div>

@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 import ChatPage from "./pages/chatPage";
+import ChatProvider from './context/ChatProvider'; // Import ChatProvider
 
 function App() {
   return (
@@ -35,14 +36,17 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route 
+          {/* Only wrap ChatPage with ChatProvider */}
+          <Route
             path="/chat"
             element={
               <ProtectedRoute>
-                <ChatPage />
+                <ChatProvider>  {/* Wrap only ChatPage with ChatProvider */}
+                  <ChatPage />
+                </ChatProvider>
               </ProtectedRoute>
             }
-            />
+          />
         </Routes>
       </div>
     </BrowserRouter>
