@@ -3,15 +3,20 @@ import mongoose from "mongoose";
 const ChatSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: function () {
+            return this.isGroup;
+        }
     },
-    groupChat: {
+    isGroup: {
         type: Boolean,
-        default: false
+        default: false // default one-to-one chat
     },
     creator: { // admin
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "User",
+        required: function () {
+            return this.isGroup;
+        }
     },
     members: [
         {

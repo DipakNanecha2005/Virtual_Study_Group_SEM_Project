@@ -6,12 +6,16 @@ import axios from 'axios';
 import Spinner from '../Spinner/Spinner';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSelector } from 'react-redux';
 
 const Dashboard = () => {
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [initialLoading, setInitialLoading] = useState(true);
+
+    const user = useSelector(state => state.user)
+    console.log("Redux user data:", user);
 
     // Show spinner for the first 1 sec
     useEffect(() => {
@@ -38,6 +42,7 @@ const Dashboard = () => {
         };
 
         fetchUserInfo();
+        
     }, []);
 
     if (initialLoading || loading) return <Spinner />;

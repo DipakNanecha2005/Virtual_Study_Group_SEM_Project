@@ -1,5 +1,4 @@
 import React from 'react';
-import { ChatState } from '../../context/ChatProvider';
 
 const UserListItem = ({ user, handleFunction }) => {
   return (
@@ -13,16 +12,16 @@ const UserListItem = ({ user, handleFunction }) => {
     >
       <img
         src={user.avatar || 'https://via.placeholder.com/40'}
-        alt={user.name}
+        alt={user.fullName}
         className="rounded-circle me-3"
         width="40"
         height="40"
       />
       <div>
         <p className="mb-1 fw-bold">{user.fullName}</p>
-        <h1 className="mb-0 text-muted" style={{ fontSize: '0.8rem' }}>
+        <p className="mb-0 text-muted" style={{ fontSize: '0.8rem' }}>
           <b>username:</b> {user.username}
-        </h1>
+        </p>
       </div>
     </div>
   );

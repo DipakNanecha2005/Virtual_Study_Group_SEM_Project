@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 // import jwt from "jsonwebtoken";
 // import bcrypt from "bcryptjs";
 
-// bio
 const UserSchema = new mongoose.Schema({
     fullName: {
         type: String,
@@ -13,6 +12,15 @@ const UserSchema = new mongoose.Schema({
         required: [true, "Username is required."],
         unique: true,
         trim: true
+    },
+    email: {
+        type: String,
+        // required: [true, "Email is required."],
+        // unique: true,
+        trim: true
+    },
+    bio: {
+        type: String
     },
     password: {
         type: String,
@@ -27,6 +35,10 @@ const UserSchema = new mongoose.Schema({
     avatar: {
         type: String,
         default: ""
+    },
+    isProfileComplete: {
+        type: Boolean,
+        default: false
     },
     refreshToken: String
 }, { timestamps: true });

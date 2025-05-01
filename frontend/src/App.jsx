@@ -1,13 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Signup from "./RegistrationForm/regs";
+import Signup from './RegistrationForm/regs'
 import Login from "./LoginForm/login";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 import ChatPage from "./pages/chatPage";
-import ChatProvider from './context/ChatProvider'; // Import ChatProvider
+import Navbar from './pages/Navbar' // Import Navbar if you want it to be visible on all pages
+import Main from "./pages/Main";
 
 function App() {
+
   return (
     <BrowserRouter>
       <div className="App">
@@ -15,38 +17,28 @@ function App() {
           <Route
             path="/login"
             element={
-              <PublicRoute>
                 <Login />
-              </PublicRoute>
             }
           />
           <Route
             path="/register"
             element={
-              <PublicRoute>
                 <Signup />
-              </PublicRoute>
             }
           />
           <Route
             path="/"
             element={
-              <ProtectedRoute>
                 <Dashboard />
-              </ProtectedRoute>
             }
           />
-          {/* Only wrap ChatPage with ChatProvider */}
           <Route
             path="/chat"
             element={
-              <ProtectedRoute>
-                <ChatProvider>  {/* Wrap only ChatPage with ChatProvider */}
-                  <ChatPage />
-                </ChatProvider>
-              </ProtectedRoute>
+                <Main />
             }
           />
+
         </Routes>
       </div>
     </BrowserRouter>

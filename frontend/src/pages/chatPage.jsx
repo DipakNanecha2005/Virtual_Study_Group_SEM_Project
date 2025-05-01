@@ -1,31 +1,27 @@
-import React from 'react';
-import { ChatState } from '../context/ChatProvider';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import MyChats from '../Elements/MyChats';
 import ChatBox from '../Elements/ChatBox';
-import SideDrawer from '../Elements/SideDrawer'; 
 import Navbar from './Navbar';
-
+import Spinner from '../Spinner/Spinner';
+import SideDrawer from '../Elements/SideDrawer';
 
 const ChatPage = () => {
-  const { user } = ChatState();
+  const user = useSelector((state) => state.user.userInfo); // Access user info from Redux store
+  const [fetchAgain, setFetchAgain] = useState(false);
 
-  if (!user) {
-    return <div>Loading...</div>;  
-  }
+
+  
 
   return (
     <>
-                <Navbar />
-      <div style={{ width: '100%' }}>
-        {user && <SideDrawer />}
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-          {user && <MyChats />}
-          {user && <ChatBox />}
-        </div>
+      <SideDrawer />
+      <div style={{ width: '100%', padding: '10px 0' }}>
+        <MyChats fetchAgain={fetchAgain} />
+        <ChatBox fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
       </div>
     </>
   );
 };
-
 
 export default ChatPage;

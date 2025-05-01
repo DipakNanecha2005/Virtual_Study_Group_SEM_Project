@@ -6,10 +6,14 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch,useSelector } from 'react-redux';
+import { logout } from '../redux/userSlice';
+
 
 const Navbar = () => {
     const navigate = useNavigate();
-
+    const dispatch = useDispatch();
+    const user = useSelector(state => state.user)
     const handleLogout = async () => {
         try {
             const res = await axios.post(
@@ -24,8 +28,11 @@ const Navbar = () => {
                 toast.success("Logged out successfully!", {
                     position: 'top-right',
                     autoClose: 500,
-                });
+                }); 
+                dispatch(logout);
+                console.log(user);
                 setTimeout(() => navigate('/login'), 1000);
+
             } else {
                 toast.error("Logout failed. Try again.", {
                     position: 'top-right',

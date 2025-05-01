@@ -5,6 +5,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import Spinner from '../Spinner/Spinner';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { setToken, setUser } from '../redux/userSlice'; // Adjust path based on your project
+import { useDispatch, useSelector } from 'react-redux';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -13,12 +15,31 @@ const Login = () => {
   const [initialLoading, setInitialLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  const user = useSelector((state) => state.user); // Get user state from Redux
+  const token = useSelector((state) => state.token);
   const navigate = useNavigate();
+  const dispatch = useDispatch(); // Initialize dispatch
 
   useEffect(() => {
     const timer = setTimeout(() => setInitialLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    console.log('Updated user state:', user); // Log the updated user state
+  }, [user]);
+
+  useEffect(() => {
+    const userInfo = localStorage.getItem('userInfo');
+    const token = localStorage.getItem('token');
+    
+    if (userInfo && token) {
+      dispatch(setUser(JSON.parse(userInfo)));
+      dispatch(setToken({ token }));
+      navigate('/');  // If already logged in, navigate to dashboard
+    }
+  }, [dispatch, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,19 +59,27 @@ const Login = () => {
         { withCredentials: true }
       );
 
-// Inside the handleSubmit method
-if (response.data.success) {
-  toast.success('Login successful!', { position: 'top-right', autoClose: 500 });
-  localStorage.setItem('userInfo', JSON.stringify(response.data.user)); // Save user object
-  localStorage.setItem('token', response.data.token); // Save token
-  setTimeout(() => navigate('/'), 1000);
-}
- else {
+      if (response.data.success) {
+        toast.success('Login successful!', { position: 'top-right', autoClose: 500 });
+
+        // Save to localStorage
+        localStorage.setItem('userInfo', JSON.stringify(response.data.user));
+        localStorage.setItem('token', response.data.token);
+
+        // Update Redux store
+        dispatch(setUser(response.data.user));
+        dispatch(setToken(response.data.token));
+
+        console.log('redux user', user);
+        console.log('redux token', token);
+
+        setTimeout(() => navigate('/'), 1000); // Navigate to dashboard
+      } else {
         toast.error(response.data.error || 'Login failed', { position: 'top-right', autoClose: 3000 });
       }
     } catch (error) {
       toast.error(
-        error.response?.data?.error || 'Server error. Please try again later.',
+        error?.response?.data?.error || 'Server error. Please try again later.',
         { position: 'top-right', autoClose: 3000 }
       );
     } finally {
@@ -67,6 +96,7 @@ if (response.data.success) {
           <h2 className="text-center mb-4">Login</h2>
           <form onSubmit={handleSubmit}>
             {error && <div className="alert alert-danger">{error}</div>}
+
             <div className="form-group mb-3">
               <label htmlFor="username">Email or Username</label>
               <input
@@ -78,6 +108,7 @@ if (response.data.success) {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 disabled={submitting}
+                autoComplete="username"  // Added autocomplete attribute for username
               />
             </div>
 
@@ -92,6 +123,7 @@ if (response.data.success) {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={submitting}
+                autoComplete="current-password"  // Added autocomplete attribute for password
               />
               <span
                 onClick={() => setShowPassword(!showPassword)}
@@ -101,7 +133,7 @@ if (response.data.success) {
                   top: '50%',
                   transform: 'translateY(-50%)',
                   cursor: 'pointer',
-                  color: '#555'
+                  color: '#555',
                 }}
               >
                 <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
@@ -111,7 +143,7 @@ if (response.data.success) {
             <button
               type="submit"
               className="btn btn-primary w-100 mb-3"
-              disabled={submitting}
+              disabled={submitting || !username || !password}
             >
               {submitting ? 'Logging in...' : 'Login'}
             </button>

@@ -5,6 +5,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, Link } from 'react-router-dom';
 import Spinner from '../Spinner/Spinner'; // <-- Add this line
+import { useDispatch } from 'react-redux';
+import { setToken, setUser } from '../redux/userSlice';
 
 const Signup = () => {
     const [fullName, setFullName] = useState('');
@@ -14,12 +16,24 @@ const Signup = () => {
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true); // <-- Initial fake loading
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    // 2-sec initial loading simulation
+
     useEffect(() => {
         const timer = setTimeout(() => setInitialLoading(false), 2000);
+    
+        const userInfo = localStorage.getItem('userInfo');
+        const token = localStorage.getItem('token');
+    
+        if (userInfo && token) {
+            dispatch(setUser(JSON.parse(userInfo)));
+            dispatch(setToken({ token }));
+            navigate('/');
+        }
+    
         return () => clearTimeout(timer);
-    }, []);
+    }, [dispatch, navigate]);
+    
 
     const validateFullName = (name) => {
         const regex = /^[A-Za-z\s-]{3,50}$/;

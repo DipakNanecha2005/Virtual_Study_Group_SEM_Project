@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaSearch, FaBell, FaUserCircle } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { ChatState } from '../context/ChatProvider';
 import axios from 'axios';
 import Spinner from '../Spinner/Spinner';
 import UserListItem from './UserAvatar/UserListItem';
+import { useSelector } from 'react-redux';
 
 const SideDrawer = () => {
   const [search, setSearch] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
-  const { user, setSelectedChat, chats, setChats } = ChatState();
 
-  // Function to search users
+  const user = useSelector((state) => state.user.userInfo); // Access user info properly
+
   const handleSearch = async (query) => {
     if (!query.trim()) {
       setSearchResult([]);
@@ -40,48 +39,8 @@ const SideDrawer = () => {
     }
   };
 
-  // Input change handler
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
-  };
-  // Function to access or create a chat
-  const accessChat = async (otherUser) => {
-    try {
-      toast.success(`Chat opened with ${otherUser.fullName}!`, {
-        position: "top-right",
-        autoClose: 1000,
-      });
-
-      setLoading(true);
-
-      const { data } = await axios.post(
-        'http://localhost:5000/chat/',
-        {
-          isGroup: false,
-          self: user._id,
-          otherUser: otherUser._id
-        },
-        { withCredentials: true }
-      );
-
-      const newChat = data.chat;
-      if (Array.isArray(chats) && !chats.find((c) => c._id === newChat._id)) {
-        setChats([newChat, ...chats]);
-      } else if (!Array.isArray(chats)) {
-        setChats([newChat]);
-      }
-      
-
-      setSelectedChat(newChat);
-    } catch (error) {
-      console.error('Error accessing chat:', error);
-      toast.error(`Error fetching the chat: ${error.message}`, {
-        position: "top-right",
-        autoClose: 1500,
-      });
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
@@ -150,16 +109,12 @@ const SideDrawer = () => {
             <Spinner />
           ) : (
             <>
-              {searchResult?.length > 0 ? (
-                searchResult.map((u) => (
-                  <UserListItem
-                    key={u._id}
-                    user={u}
-                    handleFunction={() => accessChat(u)}
-                  />
-                ))
+              {searchResult.length === 0 ? (
+                <p className='text-lg text-center mt-4'>Explore users to start a conversation</p>
               ) : (
-                search.trim() && <p>No users found for "{search}".</p>
+                searchResult.map((userItem) => (
+                  <UserListItem key={userItem._id} user={userItem} />
+                ))
               )}
             </>
           )}

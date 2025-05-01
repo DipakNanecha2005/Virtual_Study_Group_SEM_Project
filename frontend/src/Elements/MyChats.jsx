@@ -1,71 +1,64 @@
 import React, { useEffect, useState } from 'react';
-import { ChatState } from '../context/ChatProvider';
+import { useSelector } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
-import { getSender } from '../../config/ChatLogics';
-import './MyChats.css'
 
 const MyChats = ({ fetchAgain }) => {
-  const [loggedUser, setLoggedUser] = useState();
-  const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
-
-  const fetchChats = async () => {
-    try {
-      const { data } = await axios.get(`http://localhost:5000/chat/${user._id}`, {
-        withCredentials: true,
-      });
-      setChats(data);
-    } catch (error) {
-      toast.error(`Error fetching chats: ${error.message}`, {
-        position: 'top-right',
-        autoClose: 2000,
-      });
-    }
-  };
+  const { userInfo } = useSelector((state) => state.user);
+  const [chats, setChats] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    setLoggedUser(JSON.parse(localStorage.getItem('userInfo')));
+    const fetchChats = async () => {
+      if (!userInfo || !userInfo._id) return;
+      setLoading(true);
+      try {
+        // ⬇️ GET request to fetch user chats
+        const response = await axios.get(`http://localhost:5000/chats/${userInfo._id}`, {
+          withCredentials: true
+        });
+        setChats(response.data); // ✅ Assume API returns chat array
+      } catch (error) {
+        setError('Error fetching chats');
+        toast.error('Error fetching chats');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchChats();
-  }, [fetchAgain]);
+  }, [fetchAgain, userInfo]);
 
   return (
-    <div className="mychats-container">
-      <div className="mychats-header">
-        <h2>My Chats</h2>
-        <button className="new-group-button">
-          + New Group Chat
-        </button>
+    <div className="container my-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h3>My Chats</h3>
+        <button className="btn btn-primary">+ New Group Chat</button>
       </div>
 
-<div className="chats-list">
-  {Array.isArray(chats) ? (
-    chats.map((chat) => (
-      <div
-        key={chat._id}
-        className={`chat-item ${selectedChat?._id === chat._id ? 'selected' : ''}`}
-        onClick={() => setSelectedChat(chat)}
-      >
-        <div className="chat-name">
-          {chat.isGroupChat
-            ? chat.chatName
-            : getSender(loggedUser, chat.users)}
+      {loading ? (
+        <div className="text-center my-3">
+          <div className="spinner-border" role="status" />
         </div>
-        {chat.latestMessage && (
-          <div className="chat-latest-message">
-            <strong>{chat.latestMessage.sender.name}: </strong>
-            {chat.latestMessage.content.length > 50
-              ? chat.latestMessage.content.substring(0, 50) + '...'
-              : chat.latestMessage.content}
-          </div>
-        )}
-      </div>
-    ))
-  ) : (
-    <div>Loading chats...</div>
-  )}
-</div>
-
+      ) : error ? (
+        <div className="alert alert-danger">{error}</div>
+      ) : (
+        <div className="list-group">
+          {chats.length > 0 ? (
+            chats.map((chat) => (
+              <div key={chat._id} className="list-group-item list-group-item-action">
+                <h5 className="mb-1">{chat.name || 'Unnamed Chat'}</h5>
+                <small>{chat.members?.length || 0} members</small>
+              </div>
+            ))
+          ) : (
+            <p>No chats found</p>
+          )}
+        </div>
+      )}
 
       <ToastContainer />
     </div>

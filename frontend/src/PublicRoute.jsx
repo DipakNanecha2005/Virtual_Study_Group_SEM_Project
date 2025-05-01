@@ -1,25 +1,36 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import axios from 'axios';
 
 const PublicRoute = ({ children }) => {
-  const [isAuth, setIsAuth] = useState(null);
+  const [isAuth, setIsAuth] = useState(() => {
+    const cached = sessionStorage.getItem('isAuth');
+    return cached !== null ? JSON.parse(cached) : null;
+  });
 
   useEffect(() => {
+    if (isAuth !== null) return;
+
     const checkAuth = async () => {
       try {
         const res = await axios.get('http://localhost:5000/auth/check-auth', {
           withCredentials: true,
         });
-        setIsAuth(res.data.success); // true = authenticated
+
+        const success = res.data.success === true;
+        sessionStorage.setItem('isAuth', success);
+        setIsAuth(success);
       } catch (error) {
-        setIsAuth(false); // not authenticated
+        sessionStorage.setItem('isAuth', false);
+        setIsAuth(false);
       }
     };
+
     checkAuth();
-  }, []);
+  }, [isAuth]);
 
   if (isAuth === null) return <div>Loading...</div>;
+
   return isAuth ? <Navigate to="/" replace /> : children;
 };
 

@@ -1,12 +1,11 @@
+
 import { UserModel } from "../models/User.model.js";
 import bcrypt from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateToken.js";
 
 export const signup = async (req, res) => {
-    console.log("Welcome to backend Signup URL ");
     try {
         const { fullName, username, password, gender } = req.body;
-        console.log(req.body);
 
         const userExists = await UserModel.findOne({ username });
         if (userExists) {
@@ -17,9 +16,7 @@ export const signup = async (req, res) => {
         }
 
         const salt = await bcrypt.genSalt(10);
-        console.log(salt);
         const hashedPassword = await bcrypt.hash(password, salt);
-        console.log(hashedPassword)
 
         const boyAvatar = UserModel.getBoyAvatar(username);
         const girlAvatar = UserModel.getGirlAvatar(username);
@@ -31,12 +28,11 @@ export const signup = async (req, res) => {
             gender,
             avatar: gender === "male" ? boyAvatar : girlAvatar
         });
-        console.log("This is the new user")
-        console.log(newUser);
         generateTokenAndSetCookie(newUser._id, res);
 
         res.status(201).json({
-            msg: "success", user: {
+            msg: "success", 
+            user: {
                 _id: newUser._id,
                 fullName: newUser.fullName,
                 username: newUser.username,
@@ -62,7 +58,6 @@ export const login = async (req, res) => {
             });
         }
 
-
         const { username, password } = req.body;
         const user = await UserModel.findOne({ username }).select("+password");
         const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
@@ -73,11 +68,13 @@ export const login = async (req, res) => {
             });
         }
 
-        generateTokenAndSetCookie(user._id, res);
+        const token = generateTokenAndSetCookie(user._id, res);
 
-
+        
         res.status(200).json({
             msg: "Login successfully",
+            user,
+            token, 
             success: true
         });
     } catch (error) {
@@ -91,19 +88,19 @@ export const login = async (req, res) => {
 
 export const logout = (req, res) => {
     try {
-        res.cookie("jwt", "", { httpOnly: true, expires: new Date(0) }); // Clear cookie
+        res.cookie("jwt", "", { maxAge: 0 });
         res.status(200).json({
-            success: true,
-            msg: "Logged out successfully"
+            msg: "Logged out successfully",
+            success: true
         });
     } catch (error) {
-        console.error("Error in logout controller:", error);
+        console.log("Error in logout controller:", error);
         res.status(500).json({
-            success: false,
-            error: "Internal server error"
+            error: "Internal server error",
+            success: false
         });
     }
-};
+}
 
 export const getUserInfo = async (req, res) => {
     try {
@@ -122,7 +119,9 @@ export const getUserInfo = async (req, res) => {
             fullName: userData.fullName,
             username: userData.username,
             gender: userData.gender,
-            avatar: userData.avatar
+            avatar: userData.avatar,
+            email: userData?.email,
+            bio: userData?.bio
             // }
         });
     } catch (error) {
@@ -134,3 +133,40 @@ export const getUserInfo = async (req, res) => {
     }
 }
 
+export const completeProfileInfo = async (req, res) => {
+    try {
+        const { email, bio } = req.body;
+        if(!email || ! bio) {
+            return res.status(400).json({
+                error: "Email and bio are required",
+                success: false
+            })
+        }
+
+        const userData = await UserModel.findByIdAndUpdate(
+            req.userId,
+            { email, bio, isProfileComplete: true },
+            { new: true, runValidators: true }
+        );
+
+        return res.status(200).json({
+            success: true,
+            user: userData
+            // user: {
+            // _id: userData._id,
+            // fullName: userData.fullName,
+            // username: userData.username,
+            // gender: userData.gender,
+            // avatar: userData.avatar,
+            // email: userData.email,
+            // bio: userData.bio
+            // }
+        });
+    } catch (error) {
+        console.log("Error in completeProfileInfo controller:", error);
+        res.status(500).json({
+            error: "Internal server error",
+            success: false
+        });
+    }
+}
