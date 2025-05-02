@@ -10,6 +10,7 @@ export const newMessage = async (req, res) => {
             });
         }
 
+
         if (messageType === "text") {
             const { content } = req.body;
             if (!content) {
@@ -64,10 +65,9 @@ export const getMessages = async (req, res) => {
                 success: false
             });
         }
-
         const messages = await MessageModel.find({ chatId })
             .populate("sender");
-        res.sattus(200).json({
+        res.status(200).json({
             messages,
             success: true
         });

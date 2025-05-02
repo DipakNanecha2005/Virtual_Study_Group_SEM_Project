@@ -10,6 +10,7 @@ const initialState = {
   },
   token: "",
   onlineUser: [],
+  
 }
 
 export const userSlice = createSlice({

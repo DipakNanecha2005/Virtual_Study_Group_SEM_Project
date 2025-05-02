@@ -4,8 +4,8 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, Link } from 'react-router-dom';
-import Spinner from '../Spinner/Spinner'; // <-- Add this line
-import { useDispatch } from 'react-redux';
+import Spinner from '../Spinner/Spinner';
+import { useDispatch, useSelector } from 'react-redux';
 import { setToken, setUser } from '../redux/userSlice';
 
 const Signup = () => {
@@ -14,26 +14,23 @@ const Signup = () => {
     const [password, setPassword] = useState('');
     const [gender, setGender] = useState('');
     const [loading, setLoading] = useState(false);
-    const [initialLoading, setInitialLoading] = useState(true); // <-- Initial fake loading
+    const [initialLoading, setInitialLoading] = useState(true);
+    
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
+    const { token } = useSelector((state) => state.user);
 
     useEffect(() => {
         const timer = setTimeout(() => setInitialLoading(false), 2000);
+        return () => clearTimeout(timer);
+    }, []);
     
-        const userInfo = localStorage.getItem('userInfo');
-        const token = localStorage.getItem('token');
-    
-        if (userInfo && token) {
-            dispatch(setUser(JSON.parse(userInfo)));
-            dispatch(setToken({ token }));
+    // Redirect if already logged in
+    useEffect(() => {
+        if (token) {
             navigate('/');
         }
-    
-        return () => clearTimeout(timer);
-    }, [dispatch, navigate]);
-    
+    }, [token, navigate]);
 
     const validateFullName = (name) => {
         const regex = /^[A-Za-z\s-]{3,50}$/;
@@ -90,7 +87,7 @@ const Signup = () => {
             );
 
             if (response.data.success) {
-                toast.success(response.data.msg, { position: 'top-right' , autoClose: 500 });
+                toast.success(response.data.msg, { position: 'top-right', autoClose: 500 });
                 setFullName('');
                 setUsername('');
                 setPassword('');

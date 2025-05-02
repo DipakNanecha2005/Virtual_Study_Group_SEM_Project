@@ -5,7 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Spinner from '../Spinner/Spinner';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { setToken, setUser } from '../redux/userSlice'; // Adjust path based on your project
+import { setToken, setUser } from '../redux/userSlice'; // Adjust path as needed
 import { useDispatch, useSelector } from 'react-redux';
 
 const Login = () => {
@@ -16,30 +16,21 @@ const Login = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const user = useSelector((state) => state.user); // Get user state from Redux
-  const token = useSelector((state) => state.token);
+  const { userInfo, token } = useSelector((state) => state.user); // Get user state from Redux
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Initialize dispatch
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const timer = setTimeout(() => setInitialLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    console.log('Updated user state:', user); // Log the updated user state
-  }, [user]);
-
-  useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    const token = localStorage.getItem('token');
-    
-    if (userInfo && token) {
-      dispatch(setUser(JSON.parse(userInfo)));
-      dispatch(setToken({ token }));
+  // Check if user is already logged in and redirect to dashboard
+  useEffect(() => {    
+    if (token) {
       navigate('/');  // If already logged in, navigate to dashboard
     }
-  }, [dispatch, navigate]);
+  }, [token, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,19 +52,15 @@ const Login = () => {
 
       if (response.data.success) {
         toast.success('Login successful!', { position: 'top-right', autoClose: 500 });
-
-        // Save to localStorage
-        localStorage.setItem('userInfo', JSON.stringify(response.data.user));
-        localStorage.setItem('token', response.data.token);
-
-        // Update Redux store
+        
+        // Dispatch user data to Redux
         dispatch(setUser(response.data.user));
-        dispatch(setToken(response.data.token));
-
-        console.log('redux user', user);
-        console.log('redux token', token);
-
-        setTimeout(() => navigate('/'), 1000); // Navigate to dashboard
+        
+        // Dispatch token to Redux
+        dispatch(setToken({ token: response.data.token }));
+        
+        // Wait briefly before navigation to allow Redux state to update
+        setTimeout(() => navigate('/'), 1000);
       } else {
         toast.error(response.data.error || 'Login failed', { position: 'top-right', autoClose: 3000 });
       }
@@ -108,7 +95,7 @@ const Login = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 disabled={submitting}
-                autoComplete="username"  // Added autocomplete attribute for username
+                autoComplete="username"
               />
             </div>
 
@@ -123,7 +110,7 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={submitting}
-                autoComplete="current-password"  // Added autocomplete attribute for password
+                autoComplete="current-password"
               />
               <span
                 onClick={() => setShowPassword(!showPassword)}

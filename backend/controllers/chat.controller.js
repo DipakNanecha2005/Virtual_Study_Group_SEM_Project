@@ -90,10 +90,12 @@ export const getAllChatByUser = async (req, res) => {
             });
         }
 
+        
         res.status(200).json({
             chats,
-            success: true
+            success: true,
         });
+        
     } catch (error) {
         console.log("Error in getAllChatByUser controller:", error);
         res.status(500).json({

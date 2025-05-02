@@ -15,8 +15,7 @@ const Dashboard = () => {
     const [initialLoading, setInitialLoading] = useState(true);
 
     const user = useSelector(state => state.user)
-    console.log("Redux user data:", user);
-
+    const token = useSelector(state => state.token)
     // Show spinner for the first 1 sec
     useEffect(() => {
         const timer = setTimeout(() => setInitialLoading(false), 1000);
@@ -31,7 +30,6 @@ const Dashboard = () => {
                     withCredentials: true,
                 });
                 setUserInfo(res.data);
-                localStorage.removeItem('isLoggingOut'); // clear logout flag if user info loads fine
             } catch (err) {
                 console.error(err);
                 setUserInfo(null);
@@ -44,6 +42,8 @@ const Dashboard = () => {
         fetchUserInfo();
         
     }, []);
+
+    
 
     if (initialLoading || loading) return <Spinner />;
 

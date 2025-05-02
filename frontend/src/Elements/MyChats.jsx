@@ -1,36 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
+import { setSelectedChat } from '../redux/chatSlice';
 
 const MyChats = ({ fetchAgain }) => {
   const { userInfo } = useSelector((state) => state.user);
-  const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetchChats = async () => {
-      if (!userInfo || !userInfo._id) return;
-      setLoading(true);
-      try {
-        // ⬇️ GET request to fetch user chats
-        const response = await axios.get(`http://localhost:5000/chats/${userInfo._id}`, {
-          withCredentials: true
-        });
-        setChats(response.data); // ✅ Assume API returns chat array
-      } catch (error) {
-        setError('Error fetching chats');
-        toast.error('Error fetching chats');
-      } finally {
-        setLoading(false);
-      }
-    };
+  
+  const chats = useSelector((state) => state.chat.chats);
+  console.log('chats in mychats page',chats);
 
-    fetchChats();
-  }, [fetchAgain, userInfo]);
 
   return (
     <div className="container my-4">
@@ -47,16 +32,24 @@ const MyChats = ({ fetchAgain }) => {
         <div className="alert alert-danger">{error}</div>
       ) : (
         <div className="list-group">
-          {chats.length > 0 ? (
-            chats.map((chat) => (
-              <div key={chat._id} className="list-group-item list-group-item-action">
-                <h5 className="mb-1">{chat.name || 'Unnamed Chat'}</h5>
-                <small>{chat.members?.length || 0} members</small>
-              </div>
-            ))
-          ) : (
-            <p>No chats found</p>
-          )}
+{chats.length > 0 ? (
+  chats.map((user, index) => (
+    <div
+      key={index}
+      className="list-group-item list-group-item-action"
+      onClick={() => dispatch(setSelectedChat(user))}
+      style={{ cursor: 'pointer' }}
+    >
+      <h5 className="mb-1">{user.username|| user || 'Unnamed User'}</h5>
+
+      <small>{user.email || 'No email'}</small>
+
+    </div>
+  ))
+) : (
+  <p>No chats found</p>
+)}
+
         </div>
       )}
 

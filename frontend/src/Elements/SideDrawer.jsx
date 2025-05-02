@@ -1,17 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FaSearch, FaBell, FaUserCircle } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import axios from 'axios';
 import Spinner from '../Spinner/Spinner';
 import UserListItem from './UserAvatar/UserListItem';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { setSelectedChat } from '../redux/chatSlice';
+
+
 
 const SideDrawer = () => {
   const [search, setSearch] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const user = useSelector((state) => state.user.userInfo); // Access user info properly
+  const user = useSelector((state) => state.user.userInfo);
+  const selectedChat = useSelector((state) => state.selectedChat);
+  const dispatch = useDispatch();
+  const closeRef = useRef(); // For auto-close
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
 
   const handleSearch = async (query) => {
     if (!query.trim()) {
@@ -28,20 +38,40 @@ const SideDrawer = () => {
       );
       setSearchResult(res.data.contacts);
     } catch (error) {
-      console.error('Error searching users:', error);
-      toast.error('Error occurred while searching users', {
-        position: "top-left",
+      console.error('Search error:', error);
+      toast.error('Failed to search users', {
+        position: 'top-left',
         autoClose: 2000,
-        theme: "colored",
+        theme: 'colored',
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
+  const accessChat = async (user) => {
+    try {
+      dispatch(setSelectedChat(user));
+      console.log("Selected chat:", user); // Instead of selectedChat
+      closeRef.current?.click(); // Auto-close drawer
+    } catch (error) {
+      console.error("Accessing chat failed:", error);
+      toast.error("Could not access chat", {
+        position: "top-right",
+        autoClose: 2000,
+        theme: "colored",
+      });
+    }
   };
+
+
+useEffect(() => {
+  if (selectedChat) {
+    console.log("Chat updated in state:", selectedChat);
+  }
+}, [selectedChat]);
+
+  
 
   return (
     <>
@@ -83,7 +113,13 @@ const SideDrawer = () => {
       >
         <div className="offcanvas-header">
           <h5 id="drawerExampleLabel">Search Users</h5>
-          <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          <button
+            type="button"
+            className="btn-close"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+            ref={closeRef}
+          />
         </div>
         <div className="offcanvas-body">
           {/* Search input */}
@@ -91,7 +127,7 @@ const SideDrawer = () => {
             <input
               type="text"
               className="form-control me-2"
-              placeholder="Search by subject, topic, email, username"
+              placeholder="Search by name, username, or email"
               value={search}
               onChange={handleSearchChange}
             />
@@ -110,10 +146,14 @@ const SideDrawer = () => {
           ) : (
             <>
               {searchResult.length === 0 ? (
-                <p className='text-lg text-center mt-4'>Explore users to start a conversation</p>
+                <p className="text-lg text-center mt-4">Explore users to start a conversation</p>
               ) : (
                 searchResult.map((userItem) => (
-                  <UserListItem key={userItem._id} user={userItem} />
+                  <UserListItem
+                    key={userItem._id}
+                    user={userItem}
+                    handleFunction={() => accessChat(userItem)}
+                  />
                 ))
               )}
             </>
@@ -121,7 +161,6 @@ const SideDrawer = () => {
         </div>
       </div>
 
-      {/* Toast Notification */}
       <ToastContainer />
     </>
   );
