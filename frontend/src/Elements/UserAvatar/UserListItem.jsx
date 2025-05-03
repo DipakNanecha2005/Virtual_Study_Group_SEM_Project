@@ -21,6 +21,7 @@ const UserListItem = ({ user, handleFunction }) => {
         <p className="mb-1 fw-bold">{user.fullName}</p>
         <p className="mb-0 text-muted" style={{ fontSize: '0.8rem' }}>
           <b>username:</b> {user.username}
+          <b>{}</b>
         </p>
       </div>
     </div>

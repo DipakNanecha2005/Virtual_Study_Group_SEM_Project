@@ -14,13 +14,18 @@ const SideDrawer = () => {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const user = useSelector((state) => state.user.userInfo);
-  const selectedChat = useSelector((state) => state.selectedChat);
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const selectedChat = useSelector((state) => state.chat.selectedChat);
   const dispatch = useDispatch();
   const closeRef = useRef(); // For auto-close
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
+  const handleSearchChange = (value) => {
+    setSearch(value);
+    if(value.length===0){
+      setSearchResult([]);
+      return;
+    }
+    handleSearch(value);
   };
 
   const handleSearch = async (query) => {
@@ -49,10 +54,19 @@ const SideDrawer = () => {
     }
   };
 
-  const accessChat = async (user) => {
+  const createChat = async (user) => {
     try {
-      dispatch(setSelectedChat(user));
-      console.log("Selected chat:", user); // Instead of selectedChat
+
+      const res = await axios.post('http://localhost:5000/chat/',
+        {
+          isGroup:false,
+          self:userInfo._id,
+          otherUser:user._id 
+        },
+        {withCredentials:true}
+      )
+      console.log(res);
+      dispatch(setSelectedChat(res.data.chat));
       closeRef.current?.click(); // Auto-close drawer
     } catch (error) {
       console.error("Accessing chat failed:", error);
@@ -129,15 +143,8 @@ useEffect(() => {
               className="form-control me-2"
               placeholder="Search by name, username, or email"
               value={search}
-              onChange={handleSearchChange}
+              onChange={ (e) => handleSearchChange(e.target.value)}
             />
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => handleSearch(search)}
-            >
-              Go
-            </button>
           </div>
 
           {/* Search Results */}
@@ -152,7 +159,7 @@ useEffect(() => {
                   <UserListItem
                     key={userItem._id}
                     user={userItem}
-                    handleFunction={() => accessChat(userItem)}
+                    handleFunction={() => createChat(userItem)}
                   />
                 ))
               )}

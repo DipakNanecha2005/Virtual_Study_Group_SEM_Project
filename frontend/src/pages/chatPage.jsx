@@ -19,6 +19,7 @@ const ChatPage = () => {
 
     const chats = useSelector((state) => state.chats); // Access user info from Redux store
     const selectedChat = useSelector((state) => state.selectedChat);
+    console.log("Selected Chat",selectedChat);
 
   useEffect(() => {
       const fetchChats = async () => {
@@ -55,7 +56,7 @@ const ChatPage = () => {
           console.log("otherUsers",chats)
 
         } catch (error) {
-          setError('Error fetching chats',error);
+          setError('Error fetching chats',errorc);
           console.log('GHEG',error)
           toast.error('Error fetching chats');
         } finally {

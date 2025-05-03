@@ -23,6 +23,8 @@ const Main = () => {
   const selectedChat = useSelector((state) => state.chat.selectedChat);
   const chats = useSelector((state) => state.chat.chats);
 
+  
+
   const fetchMessages = async () => {
     if (!selectedChat || !selectedChat.chat_id) return;
     setLoading(true);
@@ -49,7 +51,8 @@ const Main = () => {
       sender: userInfo._id,
       chat_id: selectedChat.chat_id,
     };
-
+    
+    
     // Send message via API or socket
     try {
       const res = await axios.post(
@@ -71,6 +74,7 @@ const Main = () => {
 
   useEffect(() => {
     fetchMessages();
+    console.log('SelectedChats is ',selectedChat)
   }, [selectedChat]);
 
   useEffect(() => {
@@ -92,7 +96,7 @@ const Main = () => {
   }, [socket, selectedChat]);
 
   return (
-    <div className="container-fluid" style={{ height: '100vh', overflow: 'hidden' }}>
+    <div className="container-fluid" style={{ height: '100vh'}}>
       <div className="row h-100">
         < SideDrawer/>
         <div className="col-md-4 d-flex flex-column h-100" style={{ borderRight: '1px solid #ccc' }}>
@@ -113,7 +117,7 @@ const Main = () => {
                         selectedChat?.chat_id === user.chat_id ? 'active' : ''
                       }`}
                       style={{ cursor: 'pointer' }}
-                      onClick={() => dispatch(setSelectedChat(user))}
+                      // onClick={() => dispatch(setSelectedChat(user))}
                     >
                       <UserListItem user={user} handleFunction={() => dispatch(setSelectedChat(user))} />
                     </li>
@@ -130,7 +134,7 @@ const Main = () => {
         <div className="col-md-8 d-flex flex-column h-100">
           <div className="card h-100 d-flex flex-column">
             <div className="card-header">
-              <b>Chat with {selectedChat ? selectedChat.fullName : 'No Chat Selected'}</b>
+              <b>Chat with {selectedChat ? selectedChat._id : 'No Chat Selected'}</b>
             </div>
   
             {/* Scrollable Messages */}
