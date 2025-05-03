@@ -5,7 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Spinner from '../Spinner/Spinner';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { setToken, setUser } from '../redux/userSlice'; // Adjust path as needed
+import { setToken, setUser } from '../redux/userSlice'; 
 import { useDispatch, useSelector } from 'react-redux';
 
 const Login = () => {
@@ -16,21 +16,21 @@ const Login = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const { userInfo, token } = useSelector((state) => state.user); // Get user state from Redux
-  const navigate = useNavigate();
+  const { userInfo, token } = useSelector((state) => state.user); 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
 
   useEffect(() => {
-    const timer = setTimeout(() => setInitialLoading(false), 1000);
+    const timer = setTimeout(() => setInitialLoading(false), 500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Check if user is already logged in and redirect to dashboard
   useEffect(() => {    
-    if (token) {
-      navigate('/');  // If already logged in, navigate to dashboard
+    if (userInfo) {
+      navigate('/');  
     }
-  }, [token, navigate]);
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

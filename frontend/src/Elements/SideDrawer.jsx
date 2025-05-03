@@ -59,14 +59,38 @@ const SideDrawer = () => {
 
       const res = await axios.post('http://localhost:5000/chat/',
         {
-          isGroup:false,
-          self:userInfo._id,
-          otherUser:user._id 
+          isGroup: false,
+          self: userInfo._id,
+          otherUser: user._id 
         },
-        {withCredentials:true}
-      )
-      console.log(res);
-      dispatch(setSelectedChat(res.data.chat));
+        { withCredentials: true }
+      );
+  
+      const newChat = {
+        _id: user._id,
+        fullName: user.fullName,
+        username: user.username,
+        isProfileComplete: user.isProfileComplete,
+        lastMessage: null,
+        createdAt: res.data.chat.createdAt,
+        updatedAt: res.data.chat.updatedAt,
+        chat_id: res.data.chat._id,
+      };
+  
+      dispatch(setSelectedChat(newChat));
+      //below is res when user click on result of contact page 
+      // {
+      //   "_id": "68165d2a5cb485cbf64d79b7",
+      //   "isGroup": false,
+      //   "members": [
+      //     "6804c0e9535ddefc4f61964e",
+      //     "680fad56dc24c9f7d9709aae"
+      //   ],
+      //   "createdAt": "2025-05-03T18:15:06.239Z",
+      //   "updatedAt": "2025-05-03T18:15:06.239Z",
+      //   "__v": 0
+      // }
+      
       closeRef.current?.click(); // Auto-close drawer
     } catch (error) {
       console.error("Accessing chat failed:", error);

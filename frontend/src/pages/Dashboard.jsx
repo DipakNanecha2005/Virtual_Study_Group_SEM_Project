@@ -18,7 +18,7 @@ const Dashboard = () => {
     const token = useSelector(state => state.token)
     // Show spinner for the first 1 sec
     useEffect(() => {
-        const timer = setTimeout(() => setInitialLoading(false), 1000);
+        const timer = setTimeout(() => setInitialLoading(false), 500);
         return () => clearTimeout(timer);
     }, []);
 
