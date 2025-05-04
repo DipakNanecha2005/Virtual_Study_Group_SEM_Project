@@ -1,26 +1,53 @@
 import React, { useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { setNewMsg } from '../redux/uiSlice';
+import { handleUserTyping, sendMessage } from '../redux/messageThunks';
+import { setSelectedChat } from '../redux/chatSlice';
 
-const ChatBox = ({
-  messages,
-  userInfo,
-  selectedChat,
-  loading,
-  handleSend,
-  newMsg,
-  handleTyping,
-}) => {
+const ChatBox = () => {
+  const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.user);
+  const selectedChat = useSelector((state) => state.chat.selectedChat);
+  const { messages, loading, newMsg,isTyping } = useSelector((state) => state.ui);
+  
   const messageEndRef = useRef(null);
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const handleSend = (e) => {
+    e.preventDefault();
+    dispatch(sendMessage({
+      content: newMsg,
+      userId: userInfo._id,
+      chatId: selectedChat.chat_id,
+    }));
+  };
+
+  const handleTyping = (e) => {
+    dispatch(handleUserTyping({
+      value : e.target.value,
+      userId: userInfo._id,
+      chatId: selectedChat._id
+    }))
+  };
+
+  const handleBackToContacts = () => {
+    dispatch(setSelectedChat(null));
+  };
+
   return (
     <div className="card h-100 d-flex flex-column">
-
       {/* Chat Header */}
-      <div className="card-header">
+      <div className="card-header d-flex justify-content-between align-items-center">
         <b>Chat with {selectedChat ? selectedChat.fullName : 'No Chat Selected'}</b>
+        <button 
+          className="btn btn-sm btn-outline-secondary d-md-none"
+          onClick={handleBackToContacts}
+        >
+          Back
+        </button>
       </div>
 
       {/* Message Area */}
@@ -57,6 +84,13 @@ const ChatBox = ({
           <p>No messages yet</p>
         )}
 
+        {/* Typing Indicator */}
+        {isTyping && (
+          <div className="typing-indicator mt-2">
+            <p className="text-muted"><em>Someone is typing...</em></p>
+          </div>
+        )}
+
         {/* Scroll Target */}
         <div ref={messageEndRef} />
       </div>
@@ -65,10 +99,7 @@ const ChatBox = ({
       <div className="card-footer">
         <form
           className="d-flex"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSend();
-          }}
+          onSubmit={handleSend}
         >
           <input
             type="text"

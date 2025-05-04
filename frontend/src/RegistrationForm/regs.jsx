@@ -52,26 +52,6 @@ const Signup = () => {
     return regex.test(username) && username.length >= 3 && username.length <= 20;
   }
 
-  // Optional: check username availability (backend must support this route)
-  useEffect(() => {
-    const checkUsername = async () => {
-      if (!validateUsername(username)) return;
-      setCheckingUsername(true);
-      try {
-        const res = await axios.post('http://localhost:5000/auth/check-username', { username });
-        setErrors((prev) => ({
-          ...prev,
-          username: res.data.available ? '' : 'Username is already taken.'
-        }));
-      } catch (err) {
-        console.log('Username check failed:', err.message);
-      }
-      setCheckingUsername(false);
-    };
-
-    const delayDebounce = setTimeout(checkUsername, 600);
-    return () => clearTimeout(delayDebounce);
-  }, [username]);
 
   const handleFieldChange = (field, value) => {
     // Set field value

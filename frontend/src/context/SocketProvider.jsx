@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
 import { io } from "socket.io-client";
 import { useSelector } from "react-redux";
 
@@ -20,11 +19,11 @@ export const SocketProvider = ({ children }) => {
       });
 
       socket.on("connect", () => {
-        console.log("✅ Connected to socket:", socket.id);
+        console.log("Connected to socket:", socket.id);
       });
 
       socket.on("disconnect", () => {
-        console.log("❌ Socket disconnected");
+        console.log("Socket disconnected");
       });
 
       setSocketInstance(socket);

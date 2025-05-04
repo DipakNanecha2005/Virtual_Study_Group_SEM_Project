@@ -7,20 +7,18 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch,useSelector } from 'react-redux';
-import { logout } from '../redux/userSlice';
 
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const user = useSelector(state => state.user)
     const handleLogout = async () => {
         try {
             const res = await axios.post(
                 'http://localhost:5000/auth/logout',
-                {}, // empty body (POST still expects a body)
+                {}, 
                 {
-                    withCredentials: true // ✅ send cookies like JWT
+                    withCredentials: true 
                 }
             );
             
@@ -29,8 +27,6 @@ const Navbar = () => {
                     position: 'top-right',
                     autoClose: 500,
                 }); 
-                dispatch(logout);
-                console.log(user);
                 setTimeout(() => navigate('/login'), 1000);
 
             } else {
@@ -49,7 +45,6 @@ const Navbar = () => {
     };
 
     useEffect(() => {
-        // Bootstrap toggle handled by bundle.min.js
     }, []);
 
     return (
@@ -59,7 +54,6 @@ const Navbar = () => {
                 <div className="container-fluid">
                     <a className="navbar-brand" href="/">Virtual Study Group</a>
 
-                    {/* Toggle Button */}
                     <button
                         className="navbar-toggler"
                         type="button"
@@ -72,7 +66,6 @@ const Navbar = () => {
                         <span className="navbar-toggler-icon"></span>
                     </button>
 
-                    {/* Navbar Links */}
                     <div className="collapse navbar-collapse" id="navbarContent">
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                             <li className="nav-item">
@@ -88,8 +81,6 @@ const Navbar = () => {
                                 <a className="nav-link" href="/resources">Resources</a>
                             </li>
                         </ul>
-
-                        {/* Profile Icon on Right */}
                         <ul className="navbar-nav ms-auto">
                             <li className="nav-item dropdown">
                                 <a

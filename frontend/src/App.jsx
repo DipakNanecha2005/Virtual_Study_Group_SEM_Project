@@ -35,7 +35,6 @@ function App() {
                 <Main/>
             }
           />
-
         </Routes>
       </div>
     </BrowserRouter>

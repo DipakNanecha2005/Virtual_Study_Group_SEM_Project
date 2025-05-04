@@ -1,29 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
 import ContactsList from './ContactsList';
 import ChatBox from './ChatBox';
 import SideDrawer from '../Elements/SideDrawer';
-import { useSelector } from 'react-redux';
-import { ToastContainer } from 'react-toastify';
+import { setIsMobile } from '../redux/uiSlice';
 
-const MainLayout = ({
-  messages,
-  newMsg,
-  handleSend,
-  handleTyping,
-  isTyping,
-  loading,
-  userInfo,
-  onBack,
-}) => {
-
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+const MainLayout = () => {
+  const dispatch = useDispatch();
   const selectedChat = useSelector((state) => state.chat.selectedChat);
-
+  const { isMobile } = useSelector((state) => state.ui);
+  
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => dispatch(setIsMobile(window.innerWidth <= 768));
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="container-fluid" style={{ height: '100vh' }}>
@@ -32,20 +24,11 @@ const MainLayout = ({
         {isMobile ? (
           !selectedChat ? (
             <div className="col-12">
-              <ContactsList isMobile={true} />
+              <ContactsList />
             </div>
           ) : (
             <div className="col-12">
-              <ChatBox
-                messages={messages}
-                isTyping={isTyping}
-                userInfo={userInfo}
-                selectedChat={selectedChat}
-                loading={loading}
-                handleSend={handleSend}
-                newMsg={newMsg}
-                handleTyping={handleTyping}
-              />
+              <ChatBox />
             </div>
           )
         ) : (
@@ -54,17 +37,7 @@ const MainLayout = ({
               <ContactsList />
             </div>
             <div className="col-md-8 d-flex flex-column h-100">
-              <ChatBox
-                messages={messages}
-                isTyping={isTyping}
-                userInfo={userInfo}
-                selectedChat={selectedChat}
-                loading={loading}
-                handleSend={handleSend}
-                newMsg={newMsg}
-                handleTyping={handleTyping}
-                onBack={onBack}
-              />
+              <ChatBox />
             </div>
           </>
         )}

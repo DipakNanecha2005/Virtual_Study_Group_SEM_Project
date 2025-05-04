@@ -17,7 +17,7 @@ const SideDrawer = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const selectedChat = useSelector((state) => state.chat.selectedChat);
   const dispatch = useDispatch();
-  const closeRef = useRef(); // For auto-close
+  const closeRef = useRef();
 
   const handleSearchChange = (value) => {
     setSearch(value);
@@ -78,20 +78,8 @@ const SideDrawer = () => {
       };
   
       dispatch(setSelectedChat(newChat));
-      //below is res when user click on result of contact page 
-      // {
-      //   "_id": "68165d2a5cb485cbf64d79b7",
-      //   "isGroup": false,
-      //   "members": [
-      //     "6804c0e9535ddefc4f61964e",
-      //     "680fad56dc24c9f7d9709aae"
-      //   ],
-      //   "createdAt": "2025-05-03T18:15:06.239Z",
-      //   "updatedAt": "2025-05-03T18:15:06.239Z",
-      //   "__v": 0
-      // }
-      
-      closeRef.current?.click(); // Auto-close drawer
+
+      closeRef.current?.click(); 
     } catch (error) {
       console.error("Accessing chat failed:", error);
       toast.error("Could not access chat", {

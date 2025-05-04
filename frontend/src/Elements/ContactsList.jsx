@@ -2,9 +2,8 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import UserListItem from '../Elements/UserAvatar/UserListItem';
 import { setSelectedChat } from '../redux/chatSlice';
-import { useNavigate } from 'react-router-dom';
 
-const ContactsList = ({ isMobile }) => {
+const ContactsList = () => {
   const dispatch = useDispatch();
   const chats = useSelector(state => state.chat.chats);
   const selectedChat = useSelector(state => state.chat.selectedChat);
