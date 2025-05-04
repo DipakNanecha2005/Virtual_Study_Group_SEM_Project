@@ -9,7 +9,7 @@ export const searchContacts = async (req, res) => {
                 success: false
             });
         }
-        console.log({ searchString });
+        // console.log({ searchString });
 
         const regex = new RegExp(searchString, "i");
         const contacts = await UserModel.find({
@@ -20,6 +20,7 @@ export const searchContacts = async (req, res) => {
                 }
             ]
         });
+        
         const users = await UserModel.find({});
         return res.status(200).json({ contacts });
     } catch (error) {

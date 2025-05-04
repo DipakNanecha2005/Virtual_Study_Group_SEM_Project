@@ -1,4 +1,5 @@
 import { MessageModel } from "../models/Message.model.js";
+import { uploadOnCloudinary } from "../utils/cloudinaryHelper.js";
 
 export const newMessage = async (req, res) => {
     try {
@@ -24,7 +25,7 @@ export const newMessage = async (req, res) => {
                 message,
                 success: true
             });
-        } 
+        }
 
         if (messageType === "file") {
             if (!req.file || !req.file.fileUrl) {
@@ -77,6 +78,20 @@ export const getMessages = async (req, res) => {
             error: "Internal server error",
             success: false
         });
+    }
+}
+
+export const uploadFile = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).send("File required");
+        }
+
+        console.log({ file: req.file });
+        const result = await uploadOnCloudinary(req.file.path);
+        res.status(200).json({ response: result });
+    } catch (error) {
+        console.log({ error });
     }
 }
 

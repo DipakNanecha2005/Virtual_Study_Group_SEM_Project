@@ -235,7 +235,7 @@ export const setupSocket = (server) => {
 
     io.on("connection", (socket) => {
         const userId = socket.handshake.query.userId;
-
+        
         if (userId) {
             userSocketMap.set(userId, socket.id);
             console.log(`User connected: ${userId} with socket id: ${socket.id}`);

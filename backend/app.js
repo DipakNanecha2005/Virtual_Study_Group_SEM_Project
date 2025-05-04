@@ -7,7 +7,7 @@ export const app = express();
 // pre-defind middlewares
 app.use(cors({
     origin: process.env.ORIGINS,
-    // methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true
 }));
 // const allowedOrigins = process.env.ORIGINS?.split(',') || [];
