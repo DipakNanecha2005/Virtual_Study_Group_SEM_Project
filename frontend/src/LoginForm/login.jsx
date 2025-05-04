@@ -22,7 +22,7 @@ const Login = () => {
 
 
   useEffect(() => {
-    const timer = setTimeout(() => setInitialLoading(false), 500);
+    const timer = setTimeout(() => setInitialLoading(false), 200);
     return () => clearTimeout(timer);
   }, []);
 

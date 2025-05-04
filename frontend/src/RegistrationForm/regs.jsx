@@ -32,7 +32,7 @@ const Signup = () => {
 
 
   useEffect(() => {
-    const timer = setTimeout(() => setInitialLoading(false), 2000);
+    const timer = setTimeout(() => setInitialLoading(false), 200);
     return () => clearTimeout(timer);
   }, []);
 
