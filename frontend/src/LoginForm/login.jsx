@@ -5,8 +5,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import Spinner from '../Spinner/Spinner';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { setToken, setUser } from '../redux/userSlice'; 
+import { setToken, setUser } from '../redux/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -16,21 +19,30 @@ const Login = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const { userInfo, token } = useSelector((state) => state.user); 
+  const { userInfo, token } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
 
   useEffect(() => {
     const timer = setTimeout(() => setInitialLoading(false), 200);
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {    
-    if (userInfo) {
-      navigate('/');  
+  useEffect(() => {
+    if (token && userInfo) {
+      navigate('/');
     }
-  }, [navigate]);
+  }, [token, userInfo, navigate]);
+
+  useEffect(() => {
+    const handleEnter = (e) => {
+      if (e.key === 'Enter') {
+        handleSubmit(e);
+      }
+    };
+    window.addEventListener('keydown', handleEnter);
+    return () => window.removeEventListener('keydown', handleEnter);
+  }, [username, password]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,22 +57,21 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:5000/auth/login',
+        `${API_URL}/auth/login`,
         { username, password },
         { withCredentials: true }
       );
+      console.log("Response from login",response);
 
       if (response.data.success) {
         toast.success('Login successful!', { position: 'top-right', autoClose: 500 });
-        
-        // Dispatch user data to Redux
-        dispatch(setUser(response.data.user));
-        
-        // Dispatch token to Redux
+
         dispatch(setToken({ token: response.data.token }));
-        
-        // Wait briefly before navigation to allow Redux state to update
-        setTimeout(() => navigate('/'), 1000);
+        dispatch(setUser(response.data.user));
+
+        setTimeout(() => {
+          navigate('/');
+        }, 500);
       } else {
         toast.error(response.data.error || 'Login failed', { position: 'top-right', autoClose: 3000 });
       }
@@ -74,7 +85,9 @@ const Login = () => {
     }
   };
 
-  if (initialLoading) return <Spinner />;
+  if (initialLoading) {
+    return <Spinner />;
+  }
 
   return (
     <>
@@ -144,7 +157,7 @@ const Login = () => {
           </div>
         </div>
 
-        <ToastContainer 
+        <ToastContainer
           position="bottom-center"
           autoClose={3000}
           toastClassName="rounded-toasts"

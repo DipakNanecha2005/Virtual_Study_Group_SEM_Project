@@ -28,7 +28,6 @@ export const signup = async (req, res) => {
             gender,
             avatar: gender === "male" ? boyAvatar : girlAvatar
         });
-        generateTokenAndSetCookie(newUser._id, res);
 
         res.status(201).json({
             msg: "success", 
@@ -36,7 +35,7 @@ export const signup = async (req, res) => {
                 _id: newUser._id,
                 fullName: newUser.fullName,
                 username: newUser.username,
-                avatar: newUser.avatar
+                avatar: newUser.avatar,
             },
             success: true
         });

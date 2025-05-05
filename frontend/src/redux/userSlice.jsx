@@ -1,45 +1,47 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   userInfo: {
-    _id: "",
-    fullName: "",
-    username: "",
-    avatar: "",
-    email: "",
+    _id: '',
+    fullName: '',
+    username: '',
+    avatar: '',
+    email: '',
   },
-  token: "",
+  token: '',  // No default token, it will be set on login
   onlineUser: [],
-  
-}
+};
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
     setUser: (state, action) => {
-      state.userInfo = { ...action.payload }; // Set user info
+      state.userInfo = { ...action.payload };
     },
     setToken: (state, action) => {
-      state.token = action.payload.token;
-      localStorage.setItem('token', action.payload.token); // Persist token in localStorage
+      const { token } = action.payload;
+      state.token = token;
     },
     logout: (state) => {
-      state.userInfo = { _id: "", fullName: "", username: "", avatar: "", email: "" }; // Reset user info
-      state.token = "";
-      localStorage.removeItem('token'); // Remove token on logout
+      state.userInfo = {
+        _id: '',
+        fullName: '',
+        username: '',
+        avatar: '',
+        email: '',
+      };
+      state.token = '';
     },
     setOnlineUser: (state, action) => {
-      // Update online users, assuming payload contains an array of online users
       state.onlineUser = action.payload;
     },
     removeUser: (state, action) => {
       const userId = action.payload;
-      state.onlineUser = state.onlineUser.filter(user => user._id !== userId); // Remove offline user
+      state.onlineUser = state.onlineUser.filter((user) => user._id !== userId);
     },
   },
-})
+});
 
 export const { setUser, setToken, logout, setOnlineUser, removeUser } = userSlice.actions;
-
 export default userSlice.reducer;

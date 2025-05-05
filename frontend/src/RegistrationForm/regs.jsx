@@ -127,7 +127,6 @@ const Signup = () => {
         setEmail('');
         setPassword('');
         setGender('');
-        dispatch(setUser(response.data.user));
         setTimeout(() => navigate('/'), 500);
       } else {
         toast.error(response.data.error || 'Signup failed.', { position: 'top-right' });
