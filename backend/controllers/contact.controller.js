@@ -20,7 +20,7 @@ export const searchContacts = async (req, res) => {
                 }
             ]
         });
-        
+
         const users = await UserModel.find({});
         return res.status(200).json({ contacts });
     } catch (error) {
@@ -36,11 +36,11 @@ export const getAllContacts = async (req, res) => {
     try {
         const users = await UserModel.find(
             { _id: { $ne: req.userId } },
-            "firstName lastNamme _id email"
+            "fullName _id"
         );
 
         const contacts = users.map((user) => ({
-            label: (user.firstName && user.lastName) ? `${user.firstName} ${user.lastName}` : user.email,
+            label: `${user.fullName}`,
             value: user._id
         }));
 
