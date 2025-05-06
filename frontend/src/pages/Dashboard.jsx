@@ -44,7 +44,7 @@ const Dashboard = () => {
                 style={{ width: 80, height: 80, border: '2px solid #007bff' }}
               />
               <div>
-                <h4 className="mb-1">{userInfo.fullName}</h4>
+                <h4 className="mb-1">{userInfo._id}</h4>
                 <p className="mb-0">
                   <strong>Username:</strong> {userInfo.username}
                 </p>

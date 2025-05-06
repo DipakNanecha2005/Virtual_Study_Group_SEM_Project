@@ -8,8 +8,8 @@ const initialState = {
     avatar: '',
     email: '',
   },
-  token: '',  // No default token, it will be set on login
-  onlineUser: [],
+  token: '',  
+  onlineUsers: [],
 };
 
 export const userSlice = createSlice({
@@ -33,15 +33,21 @@ export const userSlice = createSlice({
       };
       state.token = '';
     },
-    setOnlineUser: (state, action) => {
-      state.onlineUser = action.payload;
+    setOnlineUsers: (state, action) => {
+      state.onlineUsers = action.payload;
     },
-    removeUser: (state, action) => {
+    addOnlineUser: (state,action) => {
+      const user = action.payload;
+      if(!state.onlineUsers.find(u => u._id === user._id)){
+        state.onlineUsers.push(user);
+      }
+    },
+    removeOnlineUser: (state,action) => {
       const userId = action.payload;
-      state.onlineUser = state.onlineUser.filter((user) => user._id !== userId);
-    },
+      state.onlineUsers = state.onlineUsers.filter((user) => user._id !== userId);
+    }
   },
 });
 
-export const { setUser, setToken, logout, setOnlineUser, removeUser } = userSlice.actions;
+export const { setUser, setToken, logout, setOnlineUser, addOnlineUser,removeOnlineUser } = userSlice.actions;
 export default userSlice.reducer;

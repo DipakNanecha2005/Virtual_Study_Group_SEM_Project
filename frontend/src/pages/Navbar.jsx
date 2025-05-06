@@ -8,6 +8,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/userSlice';
+import { resetChatState } from '../redux/chatSlice';
+import { resetUIstate } from '../redux/uiSlice';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -32,6 +34,8 @@ const Navbar = () => {
           autoClose: 500,
         });
         dispatch(logout());
+        dispatch(resetChatState());
+        dispatch(resetUIstate());
         setTimeout(() => navigate('/login'), 1000);
       } else {
         toast.error("Logout failed. Try again.", {

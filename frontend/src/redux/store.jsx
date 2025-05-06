@@ -20,7 +20,7 @@ const socketTransform = createTransform(
 const persistConfig = {
   key: 'root',
   storage,
-  transforms: [socketTransform], // Add the transform here
+  blacklist: ['socket'],
 };
 
 const rootReducer = combineReducers({

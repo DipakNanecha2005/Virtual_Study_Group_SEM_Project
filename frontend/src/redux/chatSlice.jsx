@@ -38,9 +38,14 @@ export const chatSlice = createSlice({
         chat._id === updatedChat._id ? updatedChat : chat
       );
     },
+    resetChatState : (state) => {
+      state.chats = [];
+      state.selectedChat = null;
+      state.notifications = [];
+    }
   },
 });
 
-export const { setChats, setSelectedChat, addNotification, clearNotifications, markNotificationAsRead, removeChat, updateChat } = chatSlice.actions;
+export const { setChats, setSelectedChat, addNotification, clearNotifications, markNotificationAsRead, removeChat, updateChat,resetChatState } = chatSlice.actions;
 
 export default chatSlice.reducer;

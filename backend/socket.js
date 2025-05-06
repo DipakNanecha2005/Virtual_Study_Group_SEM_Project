@@ -19,6 +19,7 @@ export const setupSocket = (server) => {
         for (const [userId, socketId] of userSocketMap.entries()) {
             if (socketId === socket.id) {
                 userSocketMap.delete(userId);
+                io.emit("userOffline",userId);
                 break;
             }
         }
@@ -238,6 +239,7 @@ export const setupSocket = (server) => {
 
         if (userId) {
             userSocketMap.set(userId, socket.id);
+            io.emit("userOnline",userId);
             console.log(`User connected: ${userId} with socket id: ${socket.id}`);
         } else {
             console.log("User id not provided during connection");

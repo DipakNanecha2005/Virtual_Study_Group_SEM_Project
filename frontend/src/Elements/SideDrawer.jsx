@@ -9,7 +9,7 @@ import { setSelectedChat } from '../redux/chatSlice';
 
 
 
-const SideDrawer = () => {
+export const SideDrawer = () => {
   const [search, setSearch] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -66,18 +66,7 @@ const SideDrawer = () => {
         { withCredentials: true }
       );
   
-      const newChat = {
-        _id: user._id,
-        fullName: user.fullName,
-        username: user.username,
-        isProfileComplete: user.isProfileComplete,
-        lastMessage: null,
-        createdAt: res.data.chat.createdAt,
-        updatedAt: res.data.chat.updatedAt,
-        chat_id: res.data.chat._id,
-      };
-  
-      dispatch(setSelectedChat(newChat));
+      dispatch(setSelectedChat({ ...user, chat_id: res.data.chat._id}));
 
       closeRef.current?.click(); 
     } catch (error) {
@@ -101,10 +90,10 @@ useEffect(() => {
 
   return (
     <>
-      <div className="container-fluid p-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="container-fluid ">
+        <div className="d-flex justify-content-between align-items-center ">
           {/* Search Button */}
-          <div style={{ width: "200px" }}>
+          <div style={{ width: "100%" }}>
             <button
               type="button"
               className="btn btn-outline-secondary d-flex align-items-center w-100"
@@ -115,17 +104,6 @@ useEffect(() => {
               <FaSearch />
               <span>Search users...</span>
             </button>
-          </div>
-
-          {/* Title */}
-          <div className="flex-grow-1 text-center">
-            <h3 className="mb-0">Chat with Someone</h3>
-          </div>
-
-          {/* Icons */}
-          <div className="d-flex align-items-center" style={{ gap: "20px" }}>
-            <FaBell size={24} style={{ cursor: 'pointer' }} />
-            <FaUserCircle size={40} style={{ cursor: 'pointer' }} />
           </div>
         </div>
       </div>
@@ -185,4 +163,3 @@ useEffect(() => {
   );
 };
 
-export default SideDrawer;

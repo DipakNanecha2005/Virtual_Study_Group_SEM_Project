@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import ContactsList from './ContactsList';
 import ChatBox from './ChatBox';
-import SideDrawer from '../Elements/SideDrawer';
 import { setIsMobile } from '../redux/uiSlice';
 
 const MainLayout = () => {
@@ -20,7 +19,6 @@ const MainLayout = () => {
   return (
     <div className="container-fluid" style={{ height: '100vh' }}>
       <div className="row h-100">
-        <SideDrawer />
         {isMobile ? (
           !selectedChat ? (
             <div className="col-12">
