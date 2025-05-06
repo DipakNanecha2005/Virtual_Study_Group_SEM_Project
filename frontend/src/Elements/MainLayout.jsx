@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import ContactsList from './ContactsList';
 import ChatBox from './ChatBox';
 import { setIsMobile } from '../redux/uiSlice';
+import Navbar from '../pages/Navbar';
 
 const MainLayout = () => {
   const dispatch = useDispatch();
@@ -17,6 +18,8 @@ const MainLayout = () => {
   }, [dispatch]);
 
   return (
+    <>
+    <Navbar/>
     <div className="container-fluid" style={{ height: '100vh' }}>
       <div className="row h-100">
         {isMobile ? (
@@ -42,6 +45,7 @@ const MainLayout = () => {
       </div>
       <ToastContainer />
     </div>
+    </>
   );
 };
 

@@ -26,14 +26,12 @@ const Main = () => {
   useEffect(() => {
     if (socket) {
       dispatch(setSocket(socket));
-      console.log("🚀 Socket connected and stored in Redux:", socket);
     }
   }, [socket, dispatch]);
 
   // Fetch user chats
   useEffect(() => {
     if (!userInfo || !userInfo._id) return;
-    console.log("📞 Fetching chats for user:", userInfo._id);
 
     dispatch(fetchChats(userInfo._id));
   }, [userInfo, dispatch]);
@@ -41,7 +39,6 @@ const Main = () => {
   // Fetch chat messages
   useEffect(() => {
     if (!selectedChat || !selectedChat.chat_id) return;
-    console.log("📥 Fetching messages for selected chat:", selectedChat.chat_id);
 
     dispatch(fetchMessages(selectedChat.chat_id));
   }, [selectedChat, dispatch]);
@@ -62,10 +59,8 @@ const Main = () => {
   // Socket event listeners
   useEffect(() => {
     if (!socket) return;
-    console.log("🖧 Socket event listeners initialized.");
 
     socket.on("receiveMessage", (newMessage) => {
-      console.log("💬 New message received:", newMessage);
 
       if (selectedChat && newMessage.chatId === selectedChat.chat_id) {
         dispatch(addMessage(newMessage));
@@ -73,7 +68,6 @@ const Main = () => {
     });
 
     socket.on("userTyping", (data) => {
-      console.log("✍️ User typing:", data);
 
       if (data.chatId === selectedChat?.chat_id && data.userId !== userInfo._id) {
         dispatch(setIsTyping(true));
@@ -82,24 +76,20 @@ const Main = () => {
     });
 
     socket.on("chatCreated", (newChat) => {
-      console.log("📢 New chat created:", newChat);
       dispatch(setChats([...chats, newChat]));
     });
 
     socket.on("chatUpdated", (updatedChat) => {
-      console.log("🔄 Chat updated:", updatedChat);
 
       const updated = chats.map(chat => chat._id === updatedChat._id ? updatedChat : chat);
       dispatch(setChats(updated));
     });
 
     socket.on("userAddedToChat", ({ chatId }) => {
-      console.log("✅ You were added to a chat:", chatId);
       toast.info("You were added to a chat");
     });
 
     socket.on("userRemovedFromChat", ({ chatId }) => {
-      console.log("❌ You were removed from a chat:", chatId);
 
       if (selectedChat?.chat_id === chatId) {
         dispatch(setSelectedChat(null));
@@ -120,17 +110,7 @@ const Main = () => {
       dispatch(removeMessage(messageId));
     });
 
-    socket.on("userOnline", (userId) => {
-      console.log("🟢 User online:", userId);
-    });
-
-    socket.on("userOffline", (userId) => {
-      console.log("🔴 User offline:", userId);
-    });
-
-    // Cleanup event listeners
     return () => {
-      console.log("💀 Cleaning up socket event listeners.");
 
       socket.off("receiveMessage");
       socket.off("userTyping");

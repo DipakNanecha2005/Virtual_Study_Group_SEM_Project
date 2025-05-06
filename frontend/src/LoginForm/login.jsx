@@ -61,7 +61,6 @@ const Login = () => {
         { username, password },
         { withCredentials: true }
       );
-      console.log("Response from login",response);
 
       if (response.data.success) {
         toast.success('Login successful!', { position: 'top-right', autoClose: 500 });

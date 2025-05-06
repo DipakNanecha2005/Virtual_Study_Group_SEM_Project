@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
-import { addOnlineUser, removeOnlineUser } from "../redux/userSlice";
 
 const SocketContext = createContext(null);
 export const useSocket = () => useContext(SocketContext);
@@ -21,19 +20,11 @@ export const SocketProvider = ({ children }) => {
       });
 
       socket.on("connect", () => {
-        console.log("Connected to socket:", socket.id);
       });
 
-      socket.on("userOnline",(userId) => {
-        dispatch(addOnlineUser({_id:userId}));
-      })
 
-      socket.on("userOffline",(userId) => {
-        dispatch(removeOnlineUser(userId));
-      })
 
       socket.on("disconnect", () => {
-        console.log("Socket disconnected");
       });
 
       setSocketInstance(socket);

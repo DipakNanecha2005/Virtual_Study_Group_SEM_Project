@@ -9,7 +9,7 @@ const initialState = {
     email: '',
   },
   token: '',  
-  onlineUsers: [],
+  onlineUser: [],
 };
 
 export const userSlice = createSlice({
@@ -33,21 +33,8 @@ export const userSlice = createSlice({
       };
       state.token = '';
     },
-    setOnlineUsers: (state, action) => {
-      state.onlineUsers = action.payload;
-    },
-    addOnlineUser: (state,action) => {
-      const user = action.payload;
-      if(!state.onlineUsers.find(u => u._id === user._id)){
-        state.onlineUsers.push(user);
-      }
-    },
-    removeOnlineUser: (state,action) => {
-      const userId = action.payload;
-      state.onlineUsers = state.onlineUsers.filter((user) => user._id !== userId);
-    }
   },
 });
 
-export const { setUser, setToken, logout, setOnlineUser, addOnlineUser,removeOnlineUser } = userSlice.actions;
+export const { setUser, setToken, logout, setOnlineUser, removeUser } = userSlice.actions;
 export default userSlice.reducer;

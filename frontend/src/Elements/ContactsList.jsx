@@ -10,10 +10,7 @@ const ContactsList = () => {
   const selectedChat = useSelector((state) => state.chat.selectedChat);
   const onlineUsers = useSelector((state) => state.user.onlineUsers) || []; // Ensure onlineUsers is an array
 
-  // Debugging: Check if onlineUsers is being fetched correctly
-  useEffect(() => {
-    console.log("Online Users:", onlineUsers); // Logs the onlineUsers data
-  }, [onlineUsers]);
+
 
   const handleChatSelect = (chat) => {
     dispatch(setSelectedChat(chat));
@@ -38,9 +35,6 @@ const ContactsList = () => {
                 (onlineUser) => onlineUser._id === user._id
               );
               
-              // Debugging: Log to see if isOnline works as expected
-              console.log(`Checking user ${user.fullName}: ${isOnline ? 'Online' : 'Offline'}`);
-
               return (
                 <li
                   key={user.chat_id}
